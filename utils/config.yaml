@@ -1,0 +1,6 @@
+# ESA EEG XX-REF
+# AD 1000data XX-REF
+# SD liang_19 XX
+# SD test_19 EEG XX-REF
+#prefix: "EEG "
+#suffix: "-REF"

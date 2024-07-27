@@ -1,0 +1,133 @@
+<!--
+	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=radar&version=5.4.3&lang=js&code=PYBwLglsB2AEC8sDeAoWswFMAeYDKYAngDaYBcya616AZjPhAF7mwCMAbADSwD0vsQH3RgO39AFoqABHUAbeYBLowOragZXlA5JqB4HSo10AY2DFgAJwoByAEbEAhhoDWBtbAC-XKpDCkKqGllyG8ICBcywAEUwsDUgYAwd3HHwiF0p1BNh6aEYWCgAmAAYePgERQHALQAyMhRUbGlsqeypSAHNMaAATVxsG0zBTCgBtAwAVTABbEDMsWABZNo0ACwhoGojYAwBVaGCAagAlTABnADlggGYAFgMAXUjqDxiSVjdEmmTU1jZDnn4hYUA_tUBo-RLVO6qaHoIPUwIYAG6YXSQDSmYjzahvETfQBccoAg9UAL26AYD1xDZdBAapNQexsnd1IjPl9ALuxgG7PQDPyoBy-UAIW40yrnMDAbSQEDNO5vQD0KoAKV0AC8aALk9AGIWZWoW0mwAA7hQwLoAK6Yc4JRX4ur6BYQLD9eZvUViwBgOoAIlMAn9qAB1NAHbGgE8MwBnkYBF5VZVF0pla2tuCRmDQgMPZ2s6koSSFg0FM_VYBgACrpMBoIFsoNB5v1TNgKGxMpkAaT0KHw5HDJsYcQ4Tw0xniZk7GrSQWI1GAGJsWB4LRx1PpzPZ2vB9Sh_sJQtRvAAdQAkrAAIIaDRKt0aQgAHWgq8QAApWwBaNuT2AAUV0uj0AEou1Ws9kh-p04mADKmIyYYg8vPqaVyhXK1W5WCAPjMRXyQA_bxvBIHjwZgnnSOt3ySPQ0zALBtVoJVoFCZMNzBWEVR4H0cFPeI4MSOMwAXOBsOIFVYFWBYAFIDAAbjA9RczgtjSQqO4zhsXMtkhYEti6GwvWoEcvB8PxAmCeMwhTWCMEIEAozdD0IklVp2mEu5RISSiVS6AAOTIADp0hg2BDMOEzDMMnhDPSEzDgATh4ZyOBM7MeLzcSFj6QZhn8cYwCmGY5gUmh-EACnVAAWjQBOh0AEE1AMtQAeBRvMxn1fIjiLJARoAQ2E3xyyKBBoT95QwH8IuIt57gYSC0nYGCWN5UrqHoXREOQigNxAUw3X6LZCPgAA-bLivQWqSOCcjYD6gathM_TMBaxIpvQDiJreTb3x2jbqt09RlqMtgnIs5zTKzeyAFYTOul5YGcgB2O7nO80lfKWFYwA2bY9jAI51LzDKXyKia_3yzrCvGra2vQcrv1w1aEnW-CUga6Dqrg1GOq6yEevmiMhoQMbDpy1GaFI2bCcGpacJW8GEThvtGcmgQ9s46quPUd6StgNNdAsac4w6GG_zzTTRaDFHmbzTokE-_JAAbowAuZUAffVAHdYuL5mwadsETQwsgMexkF1_WhIWfZMmNk5JQpnm7fZ3iqFt2xGKAA
+	⚠ 请注意，该图表不是 Apache ECharts 官方示例，而是由用户代码生成的。请注意鉴别其内容。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  
+  <script type="text/javascript" src="../../../AD/offline_analyse/index/js/echarts.min.js"></script>
+  <!-- Uncomment this line if you want to dataTool extension
+  <script type="text/javascript" src="../../../AD/offline_analyse/index/js/dataTool.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use gl extension
+  <script type="text/javascript" src="../../../AD/offline_analyse/index/js/echarts-gl.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-stat extension
+  <script type="text/javascript" src="../../../AD/offline_analyse/index/js/ecStat.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use map
+  <script type="text/javascript" src="../../../AD/offline_analyse/index/js/china.js"></script>
+  <script type="text/javascript" src="../../../AD/offline_analyse/index/js/world.js"></script>
+  -->
+  <!-- Uncomment these two lines if you want to use bmap extension
+  <script type="text/javascript" src="../../../AD/offline_analyse/index/js/api.js"></script>
+  <script type="text/javascript" src="../../../AD/offline_analyse/index/js/bmap.min.js"></script>
+  -->
+
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
+
+    option = {
+  textStyle: {
+        fontSize: 16, // 设置全局默认字体大小
+        color: 'black'
+    },
+  title: {
+    text: 'Spike Detection',
+    textStyle: {
+            fontSize: 20,  // 设置标题字体大小
+        }
+  },
+  legend: {
+    data: ['Template Matching', 'Unet+ResNet34'],
+    textStyle: {
+            fontSize: 14, // 设置图例字体大小
+        },
+    orient: 'vertical',    // 设置图例为垂直布局
+    right: 10,             // 设置图例距离右侧的距离
+  },
+  tooltip: {
+        // 启用提示框
+        show: true,
+        trigger: 'item', // 提示框将针对数据项触发
+  },
+  radar: {
+        indicator: [
+            { name: 'Precision', max: 100},
+            { name: 'Recall', max: 100 },
+            { name: 'F1 Score', max: 100 },
+            { 
+              name: 'SWI Accuracy\n\n= (1 - SWI Error)', max: 100,
+              axisLabel: {
+                show: true, // 显示标签
+                fontSize: 12,
+                formatter: function(value, index) {
+                    return value + '%';
+                },
+              },
+            }
+        ],
+    },
+  series: [
+    {
+      name: 'Spike Detection',
+      type: 'radar',
+      data: [
+        {
+          value: [80.22, 84.88, 82.49, 96.00],
+          name: 'Template Matching',
+          //在拐点处显示数值
+          label: {
+                    // normal: {
+                    //     show: true,
+                    //     fontSize: 12,
+                    //     formatter: (params) => {
+                    //         return params.value
+                    //     },
+                    // },
+                },
+        },
+        {
+          value: [81.42, 90.10, 85.54, 97.59],
+          name: 'Unet+ResNet34',
+          label: {
+                    // normal: {
+                    //     show: true,
+                    //     fontSize: 12,
+                    //     formatter: (params) => {
+                    //         return params.value
+                    //     },
+                    // },
+                },
+        }
+      ],
+      // markArea: {
+      //           data: [
+      //               [{name: '标记区域起点', xAxis: '20'}, {xAxis: '30'}]
+      //           ]
+      // }
+    }
+  ]
+};
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+</html>
