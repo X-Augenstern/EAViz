@@ -1,15 +1,15 @@
 from sys import argv, exit
 from PyQt5 import uic
 from PyQt5.QtGui import QPalette, QPixmap, QBrush
-from PyQt5.QtWidgets import QApplication, QFileDialog, QFrame, QMessageBox
+from PyQt5.QtWidgets import QApplication, QFileDialog, QFrame, QMessageBox, QSizePolicy
 from PyQt5.QtCore import Qt
-import matplotlib
-import matplotlib.pyplot as plt
-from numpy import linspace
+from matplotlib import use
+from matplotlib.pyplot import rcParams, close, subplots, tight_layout
+from numpy import linspace, atleast_1d
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from SelectSignalsForm import SelectSignalsForm
 from FilterOptionsForm import FilterOptionsForm
-from SelectSignalForPSD import SelectSignalForPSD
+from SelectSignalsForPSD import SelectSignalForPSD
 from SelectTimeSpanForTPM import SelectTimeSpanForTPM
 from ExtendServicesForm import ExtendServicesForm
 from ExportForm import ExportForm
@@ -22,17 +22,16 @@ from utils.diary import Diary
 from mne import Annotations, set_config
 from warnings import filterwarnings
 
-matplotlib.use('Qt5Agg')
+use('Qt5Agg')
 set_config('MNE_BROWSER_BACKEND', 'matplotlib')
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
-plt.rcParams['axes.unicode_minus'] = False
+rcParams['font.sans-serif'] = ['Microsoft YaHei']
+rcParams['axes.unicode_minus'] = False
 filterwarnings("ignore", category=UserWarning,
                message="Starting a Matplotlib GUI outside of the main thread will likely fail.")
 ui_main_form = uic.loadUiType('ui/main_form.ui')[0]
 
 
-# mne.set_config('MNE_BROWSER_BACKEND', 'qt')  # mne-qt-browser
-
+# set_config('MNE_BROWSER_BACKEND', 'qt')  # mne-qt-browser
 
 class MainForm(QFrame, ui_main_form):
     def __init__(self):
@@ -152,14 +151,23 @@ class MainForm(QFrame, ui_main_form):
         """
         # duration：window内采样时间
         # n_channels：window内channel数
+        # matplotlib backend
         eeg_plot = FigureCanvas(raw.plot(duration=self.window_size, start=start, n_channels=10,
                                          scalings=300e-6 * self.scale_factor_percent_list[self.scale_index],
-                                         show=False, use_opengl=True))  # 绑定Figure到Canvas上
+                                         show=False, use_opengl=True, color='royalblue'))  # 绑定Figure到Canvas上
         # plt.tight_layout()
-        plt.close()  # More than 20 figures have been opened.
+        close()  # More than 20 figures have been opened.
         eeg_plot.setFocusPolicy(Qt.StrongFocus)  # 将焦点策略设置为Qt.StrongFocus，以便接收键盘事件
         eeg_plot.mpl_connect('key_press_event', key_press_event)  # mpl_connect方法将键盘事件连接到canvas上
         self.eeg_dock.change_canvas(eeg_plot)
+
+        # qt backend
+        # eeg_plot = raw.plot(duration=self.window_size, start=start, n_channels=10,
+        #                     scalings=300e-6 * self.scale_factor_percent_list[self.scale_index],
+        #                     show=False, use_opengl=True, color='royalblue')
+        # eeg_dock = Dock('eeg', widget=eeg_plot)
+        # self.dock_area.addDock(eeg_dock)
+
         self.diary.debug('Plot EEG')
 
     def change_signals(self):
@@ -304,20 +312,27 @@ class MainForm(QFrame, ui_main_form):
         """
         绘制PSD
         """
-        fig, ax = plt.subplots()
-        psd_plot = FigureCanvas(
-            self.raw.compute_psd(fmin=para_list[1], fmax=para_list[2], picks=para_list[0]).plot(
-                axes=ax, color='b', spatial_colors=False, dB=True, show=False,
-            )
-        )
-        plt.tight_layout()  # 调整子图布局
-        ax.set_title(f'{para_list[0]}')
+        num_plots = len(para_list[0])
+        fig, axs = subplots(num_plots, 1, figsize=(10, num_plots * 2.5))  # 创建多个子图，固定Figure高度(宽,高 inch)
+        # <FAILED>'Axes' object is not subscriptable
+        # 当 len(para_list[0]) 为1时，plt.subplots 返回的是一个单独的 Axes 对象，而不是一个包含多个 Axes 对象的数组
+        axs = atleast_1d(axs)  # 确保 axs 始终是一个数组，即使只有一个子图时也是如此
+        for i, ch_name in enumerate(para_list[0]):
+            color = ChannelConfig.colors[i % len(ChannelConfig.colors)]
+            self.raw.compute_psd(fmin=para_list[1], fmax=para_list[2], picks=ch_name).plot(
+                axes=axs[i], color=color, spatial_colors=False, dB=True, amplitude=False, show=False)
+            axs[i].set_title(f'PSD for {ch_name}')
+        tight_layout()  # 调整子图布局
 
         if self.psd_dock is not None:
             self.psd_dock.close()
             self.psd_dock = None
 
-        self.psd_dock = SaveDock('psd', area=self.dock_area, canvas=psd_plot, hideTitle=True)
+        psd_plot = FigureCanvas(fig)
+        psd_plot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        psd_plot.setFixedHeight(num_plots * 250)  # 每个子图固定高度
+
+        self.psd_dock = SaveDock('psd', area=self.dock_area, canvas=psd_plot, hideTitle=True, enable_scroll=True)
         self.dock_area.addDock(self.psd_dock, 'bottom', self.eeg_dock)
 
         if not self.psd_switch_cbx.isEnabled():
@@ -355,7 +370,7 @@ class MainForm(QFrame, ui_main_form):
             QMessageBox.warning(self, 'Warning', 'The selected channel(s) is(are) not included in TPM channels!')
             return
 
-        fig, axes = plt.subplots(1, 5)
+        fig, axes = subplots(1, 5)
         raw = self.raw.copy().pick(picks=list(intersection))
         raw.set_montage(self.channel_config.get_montage())
 
@@ -383,7 +398,7 @@ class MainForm(QFrame, ui_main_form):
                     raw.compute_psd(fmin=0, fmax=45, picks='all').plot_topomap(
                         dB=True, ch_type='eeg', show=False, show_names=True, axes=axes))
                 tpm_title = f'{raw.times.min()}-{raw.times.max()}s'
-            plt.tight_layout()
+            tight_layout()
             fig.subplots_adjust(left=0.01, right=0.95, top=0.9, bottom=0.05, wspace=0.2, hspace=0.2)
         except Exception as e:
             self.diary.error('<FAILED>' + str(e))

@@ -145,6 +145,7 @@ cython_debug/
 
 # test files
 /test_data
+/test.py
 
 # Checkpoint stuff
 # ESC+SD

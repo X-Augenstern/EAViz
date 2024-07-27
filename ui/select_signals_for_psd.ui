@@ -10,21 +10,21 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>200</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="maximumSize">
    <size>
     <width>400</width>
-    <height>200</height>
+    <height>300</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Select signal for PSD</string>
+   <string>Select signals for PSD</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_4">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -35,7 +35,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Select a channel for spectrogram plotting:</string>
+          <string>Select signals for spectrogram plotting:</string>
          </property>
          <property name="textFormat">
           <enum>Qt::AutoText</enum>
@@ -48,17 +48,10 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QComboBox" name="select_ch_cbx">
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
+          <widget class="QListWidget" name="listWidget">
+           <property name="selectionMode">
+            <enum>QAbstractItemView::MultiSelection</enum>
            </property>
-           <item>
-            <property name="text">
-             <string>&lt;select channel&gt;</string>
-            </property>
-           </item>
           </widget>
          </item>
         </layout>

@@ -1,6 +1,7 @@
 from os import path
 from numpy import array
 from mne import channels
+from matplotlib.colors import TABLEAU_COLORS
 
 
 # import yaml
@@ -90,6 +91,13 @@ class ChannelConfig:
             -0.00331545218673759, 0.0659925451936047, 0.095]
 
     freq_bands = [(0, 4), (4, 8), (8, 12), (12, 30), (30, 45)]
+
+    colors = list(TABLEAU_COLORS.values())  # 获取颜色列表
+
+    # color_dict = {'Fp1': '#DC143C', 'Fp2': '#C71585', 'F3': '#DDA0DD', 'F4': '#BA55D3', 'C3': '#9932CC',
+    #               'C4': '#6A5ACD', 'P3': '#4169E1', 'P4': '#00BFFF', 'O1': '#008B8B', 'O2': '#3CB371', 'F7': '#556B2F',
+    #               'F8': '#808000', 'T3': '#FFD700', 'T4': '#DAA520', 'T5': '#D2B48C', 'T6': '#D2691E', 'A1': '#FFFF00',
+    #               'A2': '#8B4513', 'Fz': '#FF7F50', 'Cz': '#CD5C5C', 'Pz': '#FFB6C1'}
 
     # test_edf_channels = ['Fp1', 'F7', 'T3', 'T5', 'O1', 'F3', 'C3', 'P3', 'A1', 'Fz', 'Cz', 'Fp2', 'F8', 'T4',
     #                      'T6', 'O2', 'F4', 'C4', 'P4', 'A2', 'Fpz', 'Pz', 'ECG', 'X2', 'X3', 'X4', 'X5', 'X6',

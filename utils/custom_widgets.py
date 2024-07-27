@@ -2,14 +2,15 @@ from os import path, startfile, environ
 from sys import platform
 from platform import system
 from subprocess import Popen, run
-from PyQt5.QtWidgets import QWidget, QLabel, QApplication, QSizePolicy, QLineEdit, QFileDialog, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QApplication, QSizePolicy, QLineEdit, QFileDialog, QPushButton, \
+    QVBoxLayout, QScrollArea
 from PyQt5.QtGui import QPixmap, QCursor, QIcon
 from PyQt5.QtCore import Qt, QTimer, QSize
 from pyqtgraph.dockarea import Dock
 from utils.config import AddressConfig
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-import matplotlib.pyplot as plt
+from matplotlib.pyplot import close
 
 
 class SaveButton(QPushButton):
@@ -194,7 +195,7 @@ class HoverWindow(QWidget):
         显示canvas悬浮窗
         """
         eeg_plot = FigureCanvas(raw.plot(duration=5, n_channels=len(raw.ch_names), scalings=300e-6, show=False))
-        plt.close()  # More than 20 figures have been opened.
+        close()  # More than 20 figures have been opened.
 
         # 缩放绘图以适应 max_size
         eeg_plot.setFixedSize(max_size)
@@ -457,17 +458,26 @@ class SaveDock(Dock):
     """
     Overwrite Dock to integrate FigureCanvas already loaded its figure and save the contained figure.
     If @param fig_title is not None, adjust its h_pos in the figure during Dock resizing.
+    If @param enable_scroll is True, use QScrollArea, be sure the canvas setSizePolicy and setFixedSize before load into.
     ---
     Methodology:
     1080: dock_height / screen_height: 0.22407407407407406 - 0.9342592592592592
     Establish a linear func to decline the h_pos: (0.3, 0.9) -> (0.9, 0.7) => y = -0.333x + 1
     """
 
-    def __init__(self, name, area, canvas, size=(10, 10), hideTitle=False, fig_title=None):
+    def __init__(self, name, area, canvas, size=(10, 10), hideTitle=False, fig_title=None, enable_scroll=False):
         super(SaveDock, self).__init__(name=name, area=area, size=size, hideTitle=hideTitle)
-        self.addWidget(canvas)
         self.canvas = canvas
         self.fig_title = fig_title
+
+        if enable_scroll:
+            # 使用带滚动条的控件容纳图像
+            scroll_area = QScrollArea()
+            scroll_area.setWidget(canvas)
+            scroll_area.setWidgetResizable(True)
+            self.addWidget(scroll_area)
+        else:
+            self.addWidget(canvas)
 
         self.save_btn = SaveButton(self)
         self.save_btn.clicked.connect(self.save_fig)
