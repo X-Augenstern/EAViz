@@ -5,15 +5,16 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QFrame, QMessageBox, QSiz
 from PyQt5.QtCore import Qt
 from matplotlib import use
 from matplotlib.pyplot import rcParams, close, subplots, tight_layout
-from numpy import linspace, atleast_1d
+from numpy import atleast_1d
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from SelectSignalsForm import SelectSignalsForm
 from FilterOptionsForm import FilterOptionsForm
-from SelectSignalsForPSD import SelectSignalForPSD
+from SelectSignalsForPSD import SelectSignalsForPSD
 from SelectTimeSpanForTPM import SelectTimeSpanForTPM
 from ExtendServicesForm import ExtendServicesForm
 from ExportForm import ExportForm
 from utils.filter_info import FilterInfo
+from utils.eeg_plot_info import EEGPlotInfo
 from utils.config import ChannelConfig, AddressConfig
 from pyqtgraph.dockarea import DockArea
 from utils.custom_widgets import CanvasDock, SaveDock
@@ -46,42 +47,48 @@ class MainForm(QFrame, ui_main_form):
         self.filter_options_form = None
         self.extend_services_form = None
         self.fi = FilterInfo()
+        self.epi = None
         self.raw = None
         self.saved_raw = None
-        self.scale_factor_percent_list = list(linspace(0.1, 2.0, 21))
-        self.scale_index = 10
-        self.window_size = 5
         self.dock_area = DockArea(self)
         self.gridLayout.addWidget(self.dock_area)
         self.eeg_dock = CanvasDock('eeg', self.dock_area)
         self.dock_area.addDock(self.eeg_dock)
         self.psd_dock = None
         self.tpm_dock = None
-        self.select_signal_for_psd = None
+        self.select_signals_for_psd = None
         self.select_time_span_for_tpm = None
         self.channel_config = ChannelConfig()
         self.export_form = None
         self.t_max = None  # 最后一次sample的开始时间
+        self.groupbox_list = [self.groupBox_1, self.groupBox_2, self.groupBox_3, self.groupBox_4, self.groupBox_5]
 
     def init_ui(self):
         # self.update_background('C:/Users/hp/Desktop/1.png')
         self.change_size_cbx.setCurrentIndex(1)
-        self.select_file_btn.clicked.connect(self.load_data)
+        self.select_file_btn.clicked.connect(self.load_signals)
         self.change_signal_btn.clicked.connect(self.change_signals)
         self.change_filter_btn.clicked.connect(self.load_filter)
         self.filter_cbx.clicked.connect(self.choose_filter)
-        self.increase_scal_btn.clicked.connect(self.increase_scale)
-        self.decrease_scal_btn.clicked.connect(self.decrease_scale)
-        self.change_size_cbx.currentIndexChanged.connect(self.change_window_size)
-        self.export_btn.clicked.connect(self.export_edf)
         self.psd_btn.clicked.connect(self.show_psd)
         self.psd_switch_cbx.clicked.connect(self.close_psd)
         self.tpm_btn.clicked.connect(self.show_tpm)
         self.tpm_switch_cbx.clicked.connect(self.close_tpm)
+        self.increase_amp_btn.clicked.connect(lambda: self.change_amplitude('p'))
+        self.decrease_amp_btn.clicked.connect(lambda: self.change_amplitude('m'))
+        self.custom_amp_btn.clicked.connect(lambda: self.change_amplitude('c'))
+        # 默认会传递当前选中项的索引值，所以custom要显式传递
+        self.change_size_cbx.activated.connect(lambda: self.change_window_size(False))
+        self.custom_size_btn.clicked.connect(lambda: self.change_window_size(True))
+        self.increase_signal_btn.clicked.connect(lambda: self.change_num_signals('p'))
+        self.decrease_signal_btn.clicked.connect(lambda: self.change_num_signals('m'))
+        self.theme_btn.clicked.connect(lambda: change_theme(self.theme_btn.text()))
+        self.jmp_btn.clicked.connect(self.jump_to)
+        self.fs_btn.clicked.connect(self.full_screen)
+        self.export_btn.clicked.connect(self.export_edf)
         self.es_btn.clicked.connect(self.extend_services)
         self.listWidget.itemClicked.connect(self.show_ann)
         self.listWidget.itemDoubleClicked.connect(self.jump_to_ann)
-        self.theme_btn.clicked.connect(lambda: change_theme(self.theme_btn.text()))
         self.rename_btn.clicked.connect(self.rename_ann)
         self.delete_btn.clicked.connect(self.delete_ann)
         self.create_btn.clicked.connect(self.create_ann)
@@ -90,7 +97,7 @@ class MainForm(QFrame, ui_main_form):
         self.save_txt_btn.clicked.connect(self.save_ann)
         self.clear_btn.clicked.connect(self.clear_ann)
 
-    def load_data(self):
+    def load_signals(self):
         """
         Load SelectSignalsForm.
         """
@@ -121,11 +128,14 @@ class MainForm(QFrame, ui_main_form):
     def get_raw(self, raw, eeg_list, adr=None, preload=False):
         """
         根据所选channels绘制相应的eeg图
+
+        导入和改变通道的区别在于是否重置：地址 + EEG绘图参数 + 获取事件
+
+        但是二者都是从原始的edf中读取信号，因此改变通道后滤波需要重新滤，如果直接基于滤波后的raw改变通道，多改少没问题，但是少改多又要重新从原始
+        edf中读取，又会丢失滤波信息
         :param preload: Use to distinguish the function Select file or Change signals.
         """
         self.ini_before_load()
-
-        self.plot_eeg(raw)
         self.raw = raw
         self.eeg_list = eeg_list
 
@@ -137,28 +147,37 @@ class MainForm(QFrame, ui_main_form):
                 text = text[:34] + '...'
             self.label.setText(text)
 
+            self.epi = EEGPlotInfo(len(eeg_list))
+            self.change_size_cbx.setCurrentIndex(1)
+
             self.get_ann()
             self.t_max = self.raw.times[-1]
             self.end_time.setMaximum(self.t_max)
             self.start_time.setMaximum(self.t_max)
             self.duration.setMaximum(self.t_max)
 
+        self.plot_eeg(raw)
         self.filter_cbx.setEnabled(True)
 
-    def plot_eeg(self, raw, start=0.0):
+    def plot_eeg(self, raw, start=0.0, epi_check=False):
         """
         根据raw绘制相应的eeg图
         """
         # duration：window内采样时间
         # n_channels：window内channel数
         # matplotlib backend
-        eeg_plot = FigureCanvas(raw.plot(duration=self.window_size, start=start, n_channels=10,
-                                         scalings=300e-6 * self.scale_factor_percent_list[self.scale_index],
-                                         show=False, use_opengl=True, color='royalblue'))  # 绑定Figure到Canvas上
+        if epi_check:
+            if not self.epi.info_changed:
+                return
+        eeg_plot = FigureCanvas(raw.plot(duration=self.epi.window_size, start=start, n_channels=self.epi.n_channels,
+                                         scalings=self.epi.amplitude, show=False, use_opengl=True,
+                                         color='royalblue'))  # 绑定Figure到Canvas上
+        if self.epi.info_changed:
+            self.epi.info_changed = False
         # plt.tight_layout()
         close()  # More than 20 figures have been opened.
         eeg_plot.setFocusPolicy(Qt.StrongFocus)  # 将焦点策略设置为Qt.StrongFocus，以便接收键盘事件
-        eeg_plot.mpl_connect('key_press_event', key_press_event)  # mpl_connect方法将键盘事件连接到canvas上
+        eeg_plot.mpl_connect('key_press_event', self.keyPressEvent)  # mpl_connect方法将键盘事件连接到canvas上
         self.eeg_dock.change_canvas(eeg_plot)
 
         # qt backend
@@ -262,51 +281,15 @@ class MainForm(QFrame, ui_main_form):
             raw.filter(l_freq=low_freq, h_freq=high_freq)
         return raw
 
-    def increase_scale(self):
-        """
-        放大信号幅度
-        """
-        if self.raw is None:
-            return
-        if self.scale_factor_percent_list[self.scale_index] == max(self.scale_factor_percent_list):
-            return
-        else:
-            self.scale_index += 1
-            self.plot_eeg(self.raw)
-            self.diary.info(f'scale: {self.scale_factor_percent_list[self.scale_index]}')
-
-    def decrease_scale(self):
-        """
-        缩减信号幅度
-        """
-        if self.raw is None:
-            return
-        if self.scale_factor_percent_list[self.scale_index] == min(self.scale_factor_percent_list):
-            return
-        else:
-            self.scale_index -= 1
-            self.plot_eeg(self.raw)
-            self.diary.info(f'scale: {self.scale_factor_percent_list[self.scale_index]}')
-
-    def change_window_size(self):
-        """
-        改变窗口尺寸
-        """
-        self.window_size = int(self.change_size_cbx.currentText()[:-1])
-        if self.raw is None:
-            return
-        self.plot_eeg(self.raw)
-        self.diary.info(f'window size: {self.window_size}')
-
     def show_psd(self):
         """
-        Load SelectSignalForPSD.
+        Load SelectSignalsForPSD.
         """
         if self.raw is None:
             return
-        self.select_signal_for_psd = SelectSignalForPSD(self)
-        self.select_signal_for_psd.show()
-        self.diary.debug('MainForm —> SelectSignalForPSD')
+        self.select_signals_for_psd = SelectSignalsForPSD(self)
+        self.select_signals_for_psd.show()
+        self.diary.debug('MainForm —> SelectSignalsForPSD')
 
     def plot_psd(self, para_list=None):
         """
@@ -428,6 +411,89 @@ class MainForm(QFrame, ui_main_form):
         self.tpm_switch_cbx.setText('on')
         self.diary.debug('Close TPM')
 
+    def change_amplitude(self, flag):
+        """
+        放大/缩小/自定义信号幅度
+        :param flag: 'p'(plus) | 'm'(minus) | 'c'(custom)
+        """
+        if self.raw is None:
+            return
+        if flag == 'p':
+            self.epi.minus_scale_idx()
+        elif flag == 'm':
+            self.epi.plus_scale_idx()
+        elif flag == 'c':
+            self.epi.set_base_amp(self.custom_amp.value())
+        self.plot_eeg(self.raw, epi_check=True)
+        self.diary.info(f'scale: {self.epi.amplitude}')
+
+    def change_window_size(self, custom):
+        """
+        改变窗口尺寸
+        """
+        if self.raw is None:
+            return
+        if not custom:
+            self.epi.set_window_size(int(self.change_size_cbx.currentText()[:-1]))
+        else:
+            if self.custom_size.value() >= self.t_max:
+                self.custom_size.setValue(self.t_max)
+            self.epi.set_window_size(self.custom_size.value())
+        self.plot_eeg(self.raw, epi_check=True)
+        self.diary.info(f'window size: {self.epi.window_size}')
+
+    def change_num_signals(self, flag):
+        """
+        增加/减少window内channel数
+        :param flag: 'p'(plus) | 'm'(minus)
+        """
+        if self.raw is None:
+            return
+        if flag == 'p':
+            self.epi.plus_n_channels()
+        elif flag == 'm':
+            self.epi.minus_n_channels()
+        self.plot_eeg(self.raw, epi_check=True)
+        self.diary.info(f'channel nums: {self.epi.n_channels}')
+
+    def jump_to(self):
+        """
+        EEG图跳转至指定时间
+        """
+        if self.raw is None:
+            return
+        if self.jmp_time.value() >= self.t_max:
+            self.jmp_time.setValue(self.t_max)
+        self.plot_eeg(self.raw, start=self.jmp_time.value())
+
+    def full_screen(self):
+        """
+        EEG图全屏
+        """
+        if self.raw is None:
+            return
+        for gb in self.groupbox_list:
+            gb.setVisible(False)
+        super().showFullScreen()
+
+    def exit_full_screen(self):
+        """
+        退出EEG图全屏
+        """
+        self.showNormal()
+        for gb in self.groupbox_list:
+            gb.setVisible(True)
+
+    def export_edf(self):
+        """
+        Load ExportForm.
+        """
+        if self.raw is None:
+            return
+        self.export_form = ExportForm(self)
+        self.export_form.show()
+        self.diary.debug('MainForm —> ExportForm')
+
     def extend_services(self):
         """
         Load ExtendServicesForm.
@@ -439,16 +505,6 @@ class MainForm(QFrame, ui_main_form):
         self.extend_services_form = ExtendServicesForm(self)
         self.extend_services_form.show()
         self.diary.debug('MainForm —> ExtendServicesForm')
-
-    def export_edf(self):
-        """
-        Load ExportForm.
-        """
-        if self.raw is None:
-            return
-        self.export_form = ExportForm(self)
-        self.export_form.show()
-        self.diary.debug('MainForm —> ExportForm')
 
     def get_ann(self):
         """
@@ -549,7 +605,7 @@ class MainForm(QFrame, ui_main_form):
         """
         if self.raw is None:
             return
-        if self.end_time.value == self.t_max:
+        if self.end_time.value() == self.t_max:
             return
         if self.start_time.value() + self.duration.value() > self.t_max:
             self.end_time.setValue(self.t_max)
@@ -592,6 +648,14 @@ class MainForm(QFrame, ui_main_form):
         palette.setBrush(QPalette.Background, QBrush(pix))
         self.setPalette(palette)
 
+    def keyPressEvent(self, event):
+        """
+        键盘事件处理函数
+        """
+        if event.key == 'escape':
+            if self.isFullScreen():
+                self.exit_full_screen()
+
     def closeEvent(self, event):
         """
         程序关闭事件
@@ -620,14 +684,6 @@ def change_theme(theme):
     if theme == 'Dark':
         app.setStyleSheet(load_stylesheet_pyqt5())
         main_form.theme_btn.setText('Light')
-
-
-def key_press_event(event):
-    """
-    键盘事件处理函数
-    """
-    pressed_key = event.key
-    print(pressed_key)
 
 
 if __name__ == "__main__":

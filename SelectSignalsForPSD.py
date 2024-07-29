@@ -1,12 +1,12 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
-ui_select_signal_for_psd = uic.loadUiType('ui/select_signals_for_psd.ui')[0]
+ui_select_signals_for_psd = uic.loadUiType('ui/select_signals_for_psd.ui')[0]
 
 
-class SelectSignalForPSD(QWidget, ui_select_signal_for_psd):
+class SelectSignalsForPSD(QWidget, ui_select_signals_for_psd):
     def __init__(self, parent=None):
-        super(SelectSignalForPSD, self).__init__()
+        super(SelectSignalsForPSD, self).__init__()
         self.parent = parent
         self.setupUi(self)
         self.init_ui()

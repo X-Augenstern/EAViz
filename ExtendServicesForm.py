@@ -74,8 +74,11 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         self.vd_gridLayout.addWidget(self.input_adr_le, 0, 3, 1, 1)  # row col rolSpan colSpan
         self.vd_gridLayout.addWidget(self.output_adr_le, 1, 3, 1, 1)
         self.animi = None
-
-        self.is_syncing = False  # 同步信号
+        # 同步信号，防止在initialize方法中同步service_cbx和service_cbx1的过程中发生循环调用。
+        # 如果去掉is_syncing标志，可能会导致循环调用问题：当一个组合框的索引更改时，会触发对另一个组合框的更改，而这又会反过来触发第一个组合框的更改，从而陷入无限循环。
+        self.is_syncing = False
+        # 防止span1、span2互相影响
+        self.is_updating = False
 
     def init_ui(self):
         self.service_cbx.currentIndexChanged.connect(lambda: self.initialize(self.service_cbx.currentIndex()))
@@ -88,9 +91,8 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
 
     def initialize(self, index):
         """
-        界面初始化 + 同步
+        界面初始化
         """
-        # 同步
         if self.is_syncing:
             return
         self.is_syncing = True
@@ -253,8 +255,8 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
                 self.span2.setDecimals(0)
                 self.span2.setMinimum(1)
                 self.span2.setValue(1)
-                self.span1.valueChanged.connect(lambda: self.multi_min_span_control(0, check_list[1], t_max))
-                self.span2.valueChanged.connect(lambda: self.multi_min_span_control(1, check_list[1], t_max))
+                self.span1.valueChanged.connect(lambda: self.multi_span_control(0, check_list[1], t_max))
+                self.span2.valueChanged.connect(lambda: self.multi_span_control(1, check_list[1], t_max))
                 self.start_btn.clicked.connect(self.run_sd_semantics)
         if check_list[2] == IndexConfig.HFO_idx:
             self.span1.valueChanged.disconnect()
@@ -272,8 +274,12 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         """
         自动按模型切片长度控制时间 span
         """
+        if self.is_updating:
+            return  # 如果正在更新，直接返回，防止循环更新
+        self.is_updating = True
+
         if index == 1:
-            if self.span2.value() > t_max:
+            if self.span1.value() > t_max - span:
                 self.span2.setValue(t_max)
                 self.span1.setValue(t_max - span)
             else:
@@ -284,6 +290,8 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
                 self.span1.setValue(0)
             else:
                 self.span1.setValue(self.span2.value() - span)
+
+        self.is_updating = False  # 更新完成，解除标志
 
     def min_span_control(self, index, min_span, t_max):
         """
@@ -300,15 +308,15 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
                 new_span1 = max(self.span2.value() - min_span, 0)
                 self.span1.setValue(new_span1)
 
-    def multi_min_span_control(self, index, min_span, t_max):
+    def multi_span_control(self, index, span, t_max):
         """
-        自动按模型切片长度要求控制时间 multiple of min_span
+        自动按模型切片长度要求控制时间 multiple of span
         """
         if index == 0:
-            self.span1.setValue(min(self.span1.value(), t_max - min_span))
+            self.span1.setValue(min(self.span1.value(), t_max - span))
 
-        if self.span1.value() + self.span2.value() * 30 > t_max:
-            self.span2.setValue(floor((t_max - self.span1.value()) / min_span))
+        if self.span1.value() + self.span2.value() * span > t_max:
+            self.span2.setValue(floor((t_max - self.span1.value()) / span))
 
     def run_calcul_sta(self, g_or_r, group_idx, freq=None, start=None, stop=None):
         """
