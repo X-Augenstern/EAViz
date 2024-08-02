@@ -55,7 +55,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         self.parse = None  # AD
         self.ad_topo = SaveLabel(self)
         self.topo_layout.addWidget(self.ad_topo)
-        self.ad_res = HoverLabel(self)
+        self.ad_res = HoverLabel(self, [1600, 1200])
         self.ad_res_layout.addWidget(self.ad_res)
         self.ad_wev = QWebEngineView(self)
         self.ad_idx_layout.addWidget(self.ad_wev)

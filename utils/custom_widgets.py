@@ -114,7 +114,7 @@ class HoverLabel(SaveLabel):
         if size is not None:
             self.hover_win_size = QSize(size[0], size[1])
         else:
-            self.hover_win_size = QSize(1000, 1000)
+            self.hover_win_size = QSize(1400, 1000)
 
         self.hover_timer = QTimer(self)
         self.hover_timer.setSingleShot(True)

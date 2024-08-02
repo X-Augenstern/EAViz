@@ -1,7 +1,6 @@
 from math import sqrt
 from functools import reduce
 from operator import mul
-
 from numpy import finfo
 import torch
 from torch import nn

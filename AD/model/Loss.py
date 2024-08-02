@@ -1,5 +1,6 @@
 from torch.nn import MultiLabelSoftMarginLoss
 
+
 # class classLoss1:
 #     def __init__(self):
 #         self.loss = BCEWithLogitsLoss(weight=None, reduction='mean', pos_weight=None)
@@ -28,7 +29,6 @@ class classLoss:
         MSMLoss = self.loss(pred, label)
         loss_dict = dict(MSMLoss=MSMLoss, Total_Loss=MSMLoss)
         return loss_dict
-
 
 
 '''
@@ -66,8 +66,6 @@ mean_squared_error_loss = tf.keras.losses.MeanSquaredError()
 mse_loss = mean_squared_error_loss(true_labels, predicted_probs)
 print("Mean Squared Error Loss:", mse_loss.numpy())
 '''
-
-
 
 # if __name__ == '__main__':
 #     var = torch.rand(8, 10, 1000)

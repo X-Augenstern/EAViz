@@ -1,6 +1,6 @@
 from torch import device, cuda, from_numpy, max, float32, no_grad, load
 from numpy import array, mean, var, max as np_max
-import HFO.model as mm
+from HFO.Excellent import Celestial
 from utils.config import AddressConfig
 from mne import Annotations
 from pyqtgraph.Qt import QtGui, QtCore
@@ -21,7 +21,7 @@ def hfo_process(raw, ch_idx, start_time, end_time):
 
 
 def load_model():
-    model = mm.Celestial()
+    model = Celestial()
     # model_path = 'model_weights.pth'  <test>
     model_path = AddressConfig.get_hfo_adr('cp')
     model_weights = load(model_path, map_location=use_device)

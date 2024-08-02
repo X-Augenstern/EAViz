@@ -1,7 +1,7 @@
 from numpy import arange
 from mpl_toolkits.mplot3d import Axes3D  # noqa
 from mne import create_info, EvokedArray
-import matplotlib.pyplot as plt
+from matplotlib.pyplot import savefig, close
 from io import BytesIO
 from utils.config import ChannelConfig
 
@@ -28,8 +28,8 @@ def APSD(data, tmin, tmax, fb_idx, topo_signal=None):  # size
     tpm = evoked.plot_topomap(times, ch_type="eeg", show=False, nrows=3, ncols=4)
 
     buffer = BytesIO()
-    plt.savefig(buffer, format='png', dpi=300)
-    plt.close()
+    savefig(buffer, format='png', dpi=300)
+    close()
     buffer.seek(0)
     if topo_signal is not None:
         topo_signal.emit(buffer.getvalue())

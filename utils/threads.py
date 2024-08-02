@@ -401,7 +401,7 @@ class SDTemplateThread(SDBaseThread):
             # 获取当前窗口内的数据
             window_data = raw_filtered.get_data(start=i, stop=i + 150)  # (19,150)
             # 计算当前窗口内的相关度
-            corr = corrcoef(window_data, template_data)[0, 1]  # (19,150)
+            corr = corrcoef(window_data, template_data)[0, 1]  # (19,150) 取[0,1]作为参考，不取[0,0]是因为对角线（变量自身与自身）的相关系数都是1
             abs_corr = abs(corr)  # 正相关和负相关都可以
             # 判断相关度是否超过阈值，如果超过则保存当前窗口的起始和终止时间
             if abs_corr > corr_threshold:
