@@ -1,28 +1,30 @@
-from PyQt5 import uic
 from PyQt5.QtCore import QUrl, QPropertyAnimation, QEasingCurve
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QWidget, QTabBar, QMessageBox, QFileDialog
-from PyQt5.QtGui import QImage, QPixmap, QIcon
+from PyQt5.QtGui import QImage, QPixmap, QIcon, QColor
 from utils.config import IndexConfig, ModelConfig, AddressConfig
 from math import floor
 from collections import Counter
 from utils.threads import (StatisticsThread, SeiDESAThread, ADThread, SDTemplateThread, SDSemanticsThread, HFOThread,
                            VDThread, VDModelThread)
 from utils.custom_widgets import HoverLabel, MultiFuncEdit, SaveLabel
+from utils.config import ChannelEnum,ThemeColorConfig
 from cv2 import resize, cvtColor, COLOR_BGR2RGB
 from torch import from_numpy
 from AD.APSD import APSD
 from HFO.hfo import show_plot
+from ui.extend_services_form_cur import Ui_Form
 
-ui_extend_services_form = uic.loadUiType('ui/extend_services_form.ui')[0]
 
+# ui_extend_services_form = uic.loadUiType('ui/extend_services_form.ui')[0]
 
-class ExtendServicesForm(QWidget, ui_extend_services_form):
+class ExtendServicesForm(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super(ExtendServicesForm, self).__init__()
         self.parent = parent
         self.setupUi(self)
         self.init_ui()
+        self.setStyleSheet(ThemeColorConfig.get_ui_ss())
         if self.parent.adr is not None:
             text = self.parent.adr.split('/')[-1]
             self.adr_lbl.setToolTip(text)
@@ -30,6 +32,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
                 text = text[:34] + '...'
             self.adr_lbl.setText(text)
 
+        # ----------------------- UI -----------------------
         # 隐藏标签页
         self.tabBar = self.tabWidget.findChild(QTabBar)
         self.tabBar.hide()
@@ -41,44 +44,58 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         # listWidget固定高度
         # self.listWidget.setFixedHeight(400)
 
-        self.raw = None
-        self.check = False
-        self.statistic_thread = None
-        self.seid_esa_mod = None  # SeiD/ESA
-        self.seid_esa_thread = None
+        # ESC+SD
         self.seid_esa_fm = SaveLabel(self)
         self.seid_esa_feature = SaveLabel(self)
         self.seid_esa_res = SaveLabel(self)
         self.fm_layout.addWidget(self.seid_esa_fm)
         self.feature_layout.addWidget(self.seid_esa_feature)
         self.res_layout.addWidget(self.seid_esa_res)
-        self.parse = None  # AD
+        # AD
         self.ad_topo = SaveLabel(self)
         self.topo_layout.addWidget(self.ad_topo)
-        self.ad_res = HoverLabel(self, [1600, 1200])
+        self.ad_res = HoverLabel(self)
         self.ad_res_layout.addWidget(self.ad_res)
-        self.ad_wev = QWebEngineView(self)
-        self.ad_idx_layout.addWidget(self.ad_wev)
-        self.ad_thread = None
-        self.sd_res = HoverLabel(self)  # SD
+        # SpiD
+        self.sd_res = HoverLabel(self)
         self.sd_res_layout.addWidget(self.sd_res)
+        # ECharts
+        self.ad_wev = QWebEngineView(self)
         self.sd_wev = QWebEngineView(self)
+        self.ad_wev.page().setBackgroundColor(QColor(ThemeColorConfig.get_eai_bg()))
+        self.sd_wev.page().setBackgroundColor(QColor(ThemeColorConfig.get_eai_bg()))
+        self.ad_idx_layout.addWidget(self.ad_wev)
         self.sd_idx_layout.addWidget(self.sd_wev)
-        self.sd_tem_thread = None
-        self.sd_sem_thread = None
-        self.hfo_thread = None
-        self.vd_thread = None  # VD
-        self.vd_mod_thread = None  # 标记为self才不会卡死进程！
+        # VD
         self.input_adr_le = MultiFuncEdit(self)
         self.output_adr_le = MultiFuncEdit(self, func=1)
         self.vd_gridLayout.addWidget(self.input_adr_le, 0, 3, 1, 1)  # row col rolSpan colSpan
         self.vd_gridLayout.addWidget(self.output_adr_le, 1, 3, 1, 1)
-        self.animi = None
+
+        # ----------------------- Attribute -----------------------
+        self.raw = None
+        self.check = False
+        self.statistic_thread = None
         # 同步信号，防止在initialize方法中同步service_cbx和service_cbx1的过程中发生循环调用。
         # 如果去掉is_syncing标志，可能会导致循环调用问题：当一个组合框的索引更改时，会触发对另一个组合框的更改，而这又会反过来触发第一个组合框的更改，从而陷入无限循环。
         self.is_syncing = False
         # 防止span1、span2互相影响
         self.is_updating = False
+        # ESC+SD
+        self.seid_esa_mod = None
+        self.seid_esa_thread = None
+        # AD
+        self.parse = None
+        self.ad_thread = None
+        # SpiD
+        self.sd_tem_thread = None
+        self.sd_sem_thread = None
+        # SRD
+        self.hfo_thread = None
+        # VD
+        self.vd_thread = None
+        self.vd_mod_thread = None  # 标记为self才不会卡死进程！
+        self.animi = None
 
     def init_ui(self):
         self.service_cbx.currentIndexChanged.connect(lambda: self.initialize(self.service_cbx.currentIndex()))
@@ -111,30 +128,27 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         self.ad_unique_widgets()
         self.auto_annotate_widgets()
         self.vd_hide_widgets(True)
+        self.gb_2.setTitle('Channel for Statistics Calculating:')
 
         if index == IndexConfig.SeiD_ESA_ui_idx:
-            """ SeiD/ESA """
             self.add_model(ModelConfig.SeiD_ESA_model)
-            self.process_text_lbl.setText('SeiD/ESA初始化成功！')
+            self.set_process_txt(1, service_name='ESC+SD')
         elif index == IndexConfig.AD_ui_idx:
-            """ AD """
             self.add_model(ModelConfig.AD_model)
-            self.process_text_lbl.setText('AD初始化成功！')
+            self.set_process_txt(1, service_name='AD')
             self.ad_unique_widgets(True)
             self.auto_annotate_widgets(True)
         elif index == IndexConfig.SD_ui_idx:
-            """ SD """
             self.add_model(ModelConfig.SD_model)
-            self.process_text_lbl.setText('SD初始化成功！')
+            self.set_process_txt(1, service_name='SpiD')
             self.auto_annotate_widgets(True)
         elif index == IndexConfig.HFO_ui_idx:
-            """ HFO """
             self.add_model(ModelConfig.HFO_model)
-            self.process_text_lbl.setText('HFO初始化成功！')
+            self.set_process_txt(1, service_name='SRD')
+            self.gb_2.setTitle('Channel for Analysing:')
         elif index == IndexConfig.VD_ui_idx:
-            """ VD """
             # self.add_model(ModelConfig.VD_model)
-            self.process_text_lbl.setText('VD初始化成功！')
+            self.set_process_txt(1, service_name='VD')
             self.vd_model_cbx.setToolTip(ModelConfig.get_des('VD'))
             self.vd_hide_widgets(False)
             if self.vd_thread is None:
@@ -176,7 +190,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
                 self.check_input([500, 0.3, IndexConfig.SD_idx])
             elif model_name == 'Unet+ResNet34':
                 self.check_input([500, 30.00, IndexConfig.SD_idx])
-        elif model_name == 'MFCNN':
+        elif model_name == 'MKCNN':
             if self.check is False:
                 self.check_input([1000, 1, IndexConfig.HFO_idx])
 
@@ -190,8 +204,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         """
         # Check .edf
         if self.parent.raw is None:
-            self.process_text_lbl.setText('请加载.edf文件！')
-            self.parent.diary.info('请加载.edf文件！')
+            self.set_process_txt(2)
             return
         else:
             self.raw = self.parent.raw.copy()
@@ -199,31 +212,27 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         # Check sfreq
         sfreq = self.raw.info['sfreq']
         if sfreq != check_list[0]:
-            self.process_text_lbl.setText(f'要求.edf的采样频率为{check_list[0]}Hz！')
-            self.parent.diary.info(f'要求.edf的采样频率为{check_list[0]}Hz！')
+            self.set_process_txt(3, sfreq=check_list[0])
             return
 
         # Check t_max
         t_max = floor(self.raw.n_times / sfreq * 100) / 100
         if t_max < check_list[1]:
-            self.process_text_lbl.setText(f'要求.edf的时间 >= {check_list[1]}s！')
-            self.parent.diary.info(f'要求.edf的时间 >= {check_list[1]}s！')
+            self.set_process_txt(4, min_time=check_list[1])
             return
 
         # Check chns
         chns = []
         if check_list[2] == IndexConfig.SeiD_ESA_idx:
-            chns = self.parent.channel_config.SeiD_ESA_channels
+            chns = ChannelEnum.CH21.value
         elif check_list[2] == IndexConfig.AD_idx or check_list[2] == IndexConfig.SD_idx:
-            chns = self.parent.channel_config.AD_SD_channels
+            chns = ChannelEnum.CH19.value
 
         if chns and Counter(self.raw.ch_names) != Counter(chns):
-            self.process_text_lbl.setText('当前通道不符合要求！')
-            self.parent.diary.info('当前通道不符合要求！')
+            self.set_process_txt(5)
             return
         else:
-            self.process_text_lbl.setText('当前通道符合要求，可以开始检测...')
-            self.parent.diary.info('当前通道符合要求，可以开始检测...')
+            self.set_process_txt(6)
 
         # Prepare
         self.span1.setValue(0.00)
@@ -376,13 +385,12 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         """
         if self.model_cbx.currentText() == '':
             return
-        self.process_text_lbl.setText('正在检测中，请稍等...')
-        self.process_text_lbl.repaint()
+        self.set_process_txt(7)
         start_time = self.span1.value()
         stop_time = self.span2.value()
         self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.SeiD_ESA_idx, freq=1000, start=start_time, stop=stop_time)
 
-        self.parent.diary.info('使用SeiD/ESA线程进行检测，接口传入参数：\n'
+        self.parent.diary.info('使用ESC+SD线程进行检测，接口传入参数：\n'
                                f'start time: {start_time}\n'
                                f'model:{model}')
 
@@ -395,8 +403,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
             self.seid_esa_thread.fm_signal.connect(self.seid_esa_fm.update_img)
             self.seid_esa_thread.feature_signal.connect(self.seid_esa_feature.update_img)
             self.seid_esa_thread.res_signal.connect(self.seid_esa_res.update_img)
-        self.seid_esa_thread.finish_signal.connect(lambda: self.process_text_lbl.setText('检测完成！'))
-        self.seid_esa_thread.finish_signal.connect(lambda: self.parent.diary.debug(f'{model}检测完成！'))
+        self.seid_esa_thread.finish_signal.connect(lambda: self.set_process_txt(8, model_name=model))
         self.seid_esa_thread.start()
 
     def ad_unique_widgets(self, show=False):
@@ -427,7 +434,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         """
         if self.model_cbx.currentText() == '':
             return
-        self.process_text_lbl.setText('正在检测中，请稍等...')
+        self.set_process_txt(7)
         start_time = self.span1.value()
         stop_time = self.span2.value()
         self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.AD_idx, freq=1000, start=start_time, stop=stop_time)
@@ -450,8 +457,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         self.ad_thread.topo_signal.connect(self.ad_topo.update_img)
         self.ad_thread.res_signal.connect(lambda x: self.ad_res.update_img(img_data=x))
         self.ad_thread.ann_signal.connect(self.annotate_result_overlap)
-        self.ad_thread.finish_signal.connect(lambda: self.process_text_lbl.setText('检测完成！'))
-        self.ad_thread.finish_signal.connect(lambda: self.parent.diary.debug('AD检测完成！'))
+        self.ad_thread.finish_signal.connect(lambda: self.set_process_txt(8, model_name=f'{model[0]}+{model[1]}'))
         self.ad_thread.finish_signal.connect(
             lambda: self.tpm_btn.setEnabled(True) if not self.tpm_btn.isEnabled() else None)
         self.ad_thread.start()
@@ -500,8 +506,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         """
         if self.model_cbx.currentText() == '':
             return
-        self.process_text_lbl.setText('正在检测中，请稍等...')
-        self.process_text_lbl.repaint()
+        self.set_process_txt(7)
         start_time = self.span1.value()
         stop_time = self.span2.value()
         self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.SD_idx, freq=500, start=start_time, stop=stop_time)
@@ -516,8 +521,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         self.sd_tem_thread.res_signal.connect(lambda x, y: self.sd_res.update_img(img_data=x, raw=y))
         self.sd_tem_thread.ann_signal.connect(self.annotate_result_overlap)
         self.sd_tem_thread.swi_signal.connect(lambda x: self.sd_swi.setText('SWI(Spike wave index):' + x))
-        self.sd_tem_thread.finish_signal.connect(lambda: self.process_text_lbl.setText('检测完成！'))
-        self.sd_tem_thread.finish_signal.connect(lambda: self.parent.diary.debug('模板匹配检测完成！'))
+        self.sd_tem_thread.finish_signal.connect(lambda: self.set_process_txt(8, model_name='Template Matching'))
         self.sd_tem_thread.start()
 
     def run_sd_semantics(self):
@@ -526,8 +530,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         """
         if self.model_cbx.currentText() == '':
             return
-        self.process_text_lbl.setText('正在检测中，请稍等...')
-        self.process_text_lbl.repaint()
+        self.set_process_txt(7)
         start_time = self.span1.value()
         stop_time = start_time + self.span2.value() * 30
         self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.SD_idx, freq=500, start=start_time, stop=stop_time)
@@ -542,8 +545,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         self.sd_sem_thread.res_signal.connect(lambda x, y: self.sd_res.update_img(img_data=x, raw=y))
         self.sd_sem_thread.ann_signal.connect(self.annotate_result_overlap)
         self.sd_sem_thread.swi_signal.connect(lambda x: self.sd_swi.setText('SWI(Spike wave index):' + x))
-        self.sd_sem_thread.finish_signal.connect(lambda: self.process_text_lbl.setText('检测完成！'))
-        self.sd_sem_thread.finish_signal.connect(lambda: self.parent.diary.debug('语义分割检测完成！'))
+        self.sd_sem_thread.finish_signal.connect(lambda: self.set_process_txt(8, model_name='Semantic Segmentation'))
         self.sd_sem_thread.start()
 
     def annotate_result_overlap(self, ann_list, des_list, start_time, end_time):
@@ -553,8 +555,6 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         test: AD: 1000data_ad.edf 0-11s 1-12s 2-13s
               SD: test_19_sd.edf 0-10s 1-11s 2-12s 29-39s 30-40s
         """
-        self.process_text_lbl.setText('开始绘制检测结果...')
-        self.process_text_lbl.repaint()
         if len(ann_list) > 0:
             # ann = self.parent.raw.annotations 使用 ann.crop() 依然会影响到 self.parent.raw.annotations 需要使用copy
             ann = self.parent.raw.annotations.copy()
@@ -637,8 +637,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
             self.parent.plot_eeg(self.parent.raw, start=start_time)
             self.parent.get_ann()
             self.raw = self.parent.raw.copy()
-        self.process_text_lbl.setText('绘制完成！')
-        self.parent.diary.info('检测结果绘制完成！')
+        self.set_process_txt(10)
 
     def run_hfo(self):
         """
@@ -646,25 +645,25 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         """
         if self.model_cbx.currentText() == '':
             return
-        self.process_text_lbl.setText('正在检测中，请稍等...')
-        self.process_text_lbl.repaint()
+        selected_indexed = self.listWidget.selectedIndexes()
+        if not selected_indexed:
+            self.set_process_txt(14)
+            return
+        ch_idx = selected_indexed[0].row()  # 获取选中通道索引
+        self.set_process_txt(7)
         start_time = self.span1.value()
         stop_time = self.span2.value()
         # self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.HFO_idx, freq=1000, start=start_time, stop=stop_time)
-        selected_indexed = self.listWidget.selectedIndexes()
-        if not selected_indexed:
-            return
-        ch_idx = selected_indexed[0].row()  # 获取选中通道索引
 
-        self.parent.diary.info('使用HFO线程进行检测，接口传入参数：\n'
+        self.parent.diary.info('使用SRD线程进行检测，接口传入参数：\n'
                                f'ch_idx: {ch_idx}\n'
                                f'start time: {start_time}\n'
                                f'stop_time: {stop_time}\n')
 
         self.hfo_thread = HFOThread(self.raw.copy(), ch_idx, start_time, stop_time)
         self.hfo_thread.res_signal.connect(lambda x: self.plot_hfo(x, start_time))
-        self.hfo_thread.finish_signal.connect(lambda: self.process_text_lbl.setText('检测完成！'))
-        self.hfo_thread.finish_signal.connect(lambda: self.parent.diary.debug('HFO检测完成！'))
+        # self.hfo_thread.res_signal.connect(lambda x: x.plot())  # 此处已经把HFO事件加入到单通道的raw中了（绘制出来就有显示）
+        self.hfo_thread.finish_signal.connect(lambda: self.set_process_txt(8, model_name='SRD'))
         self.hfo_thread.start()
 
     def plot_hfo(self, merged_raw, start_time):
@@ -680,20 +679,20 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         """
         VD 初始化线程
         """
+        self.vd_start_btn.setIcon(QIcon(AddressConfig.get_icon_adr('start')))
+        self.vd_stop_btn.setIcon(QIcon(AddressConfig.get_icon_adr('stop')))
+        self.list_btn.setIcon(QIcon(AddressConfig.get_icon_adr('list')))
         self.vd_thread = VDThread()
-        # self.vd_thread.raw_signal.connect(lambda x: self.vd_show_video_img(x, self.input_lbl))
         self.vd_thread.img_signal.connect(lambda x: self.vd_show_video_img(x, self.output_lbl))
         self.vd_thread.res_signal.connect(self.vd_res.addItem)
         self.vd_thread.percent_signal.connect(lambda x: self.progressBar.setValue(x))
         self.vd_thread.normal_finish_signal.connect(self.vd_stop)
-        self.vd_thread.normal_finish_signal.connect(lambda: self.process_text_lbl.setText('检测完成！'))
-        self.vd_thread.normal_finish_signal.connect(lambda: self.parent.diary.debug('VD检测完成！'))
-        self.vd_thread.abnormal_finish_signal.connect(lambda: self.process_text_lbl.setText('检测终止！'))
-        self.vd_thread.abnormal_finish_signal.connect(lambda: self.parent.diary.debug('VD检测终止！'))
+        self.vd_thread.normal_finish_signal.connect(lambda: self.set_process_txt(8, model_name='VD'))
+        self.vd_thread.abnormal_finish_signal.connect(lambda: self.set_process_txt(11))
 
         self.vd_mod_thread = VDModelThread(self.vd_thread.cfg)
         self.vd_mod_thread.mod_signal.connect(self.vd_thread.update_mod)
-        self.vd_mod_thread.finish_signal.connect(lambda: self.process_text_lbl.setText('VD模型加载完成！'))
+        self.vd_mod_thread.finish_signal.connect(lambda: self.set_process_txt(12))
         self.vd_mod_thread.finish_signal.connect(self.vd_activate)
         self.vd_mod_thread.start()
 
@@ -806,7 +805,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
         if self.vd_start_btn.isChecked():
             self.vd_start_btn.setIcon(QIcon(AddressConfig.get_icon_adr('pause')))
             self.vd_thread.is_continue = True
-            self.process_text_lbl.setText('正在检测中...')
+            self.set_process_txt(7)
             # 如果该线程还没开始则start
             if not self.vd_thread.isRunning():
                 self.vd_res.clear()
@@ -817,7 +816,7 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
                 self.vd_thread.start()
         else:
             self.vd_start_btn.setIcon(QIcon(AddressConfig.get_icon_adr('start')))
-            self.process_text_lbl.setText('检测已暂停！')
+            self.set_process_txt(13)
             self.vd_thread.is_continue = False
 
     def vd_stop(self):
@@ -897,6 +896,65 @@ class ExtendServicesForm(QWidget, ui_extend_services_form):
             label.setPixmap(pixmap)
         else:
             self.parent.diary.warning('Unable to load image.')
+
+    def set_process_txt(self, status_code, service_name=None, sfreq=None, min_time=None, model_name=None):
+        """
+        :param status_code:
+            1: service_name initialized!
+            2: load .edf
+            3: sfreq
+            4: min_time
+            5: chns does not meet
+            6: chs met
+            7: analysis in progress
+            8: model_name analysis complete
+            9: add analysis results
+            10: adding complete
+            11: analysis terminated
+            12: VD model loaded
+            13: analysis paused
+            14: no chn is selected
+        :param service_name: with 1
+        :param sfreq: with 3
+        :param min_time: with 4
+        :param model_name: with 8
+        """
+        txt = {
+            1: f'{service_name} successfully initialized!',
+            2: 'Please load the .edf file!',
+            3: f'Required sampling frequency {sfreq}Hz!',
+            4: f'Required sampling time >= {min_time}s!',
+            5: 'The current channel does not meet the requirements!',
+            6: 'Channel requirements met. You can start analyse...',
+            7: 'Analysis in progress, please wait...',
+            8: f'{model_name} analysis complete!',
+            9: 'Start annotating analysis results...',
+            10: 'Annotating complete.',
+            11: 'Analysis terminated.',
+            12: 'VD model loaded!',
+            13: 'Analysis paused.',
+            14: 'Please select a channel for SRD analysing.'
+        }
+
+        diary_txt = {
+            2: '请加载.edf文件！',
+            3: f'要求.edf的采样频率为{sfreq}Hz！',
+            4: f'要求.edf的时间 >= {min_time}s！',
+            5: '当前通道不符合要求！',
+            6: '当前通道符合要求，可以开始检测...',
+            8: f'{model_name}检测完成！',
+            9: '开始添加检测结果...',
+            10: '检测结果添加完成！',
+            11: 'VD检测终止！',
+            14: '未选择用于SRD检测的通道'
+        }
+
+        if status_code in txt:
+            self.process_text_lbl.setText(txt[status_code])
+            if status_code in {7, 9}:
+                self.process_text_lbl.repaint()
+        if status_code in diary_txt:
+            self.parent.diary.info(diary_txt[status_code])
 
     def closeEvent(self, event):
         """

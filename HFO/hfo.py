@@ -1,13 +1,11 @@
+from PyQt5.QtGui import QColor
 from torch import device, cuda, from_numpy, max, float32, no_grad, load
-from numpy import array, mean, var, max as np_max
+from numpy import array, mean, std, max as np_max
 from HFO.Excellent import Celestial
-from utils.config import AddressConfig
+from utils.config import AddressConfig, ThemeColorConfig
 from mne import Annotations
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph import mkPen, mkBrush, GraphicsView, GraphicsLayout, InfiniteLine, TextItem, LinearRegionItem
-
-# import mne
-# import pyqtgraph as pg
 
 use_device = device("cuda" if cuda.is_available() else "cpu")
 
@@ -89,9 +87,9 @@ def merged(raw, predicted_data, start_time):
 
 
 def get_bias(high_data):
-    tmp_data = high_data * 1e6
-    bias = mean(tmp_data) + 2 * var(tmp_data)
-    return bias * 1e-6
+    mean_val = mean(high_data)
+    std_val = std(high_data)
+    return mean_val - std_val * 2, mean_val + std_val * 2
 
 
 def yAxisTickFormatter(values, scale, spacing):
@@ -102,36 +100,39 @@ def yAxisTickFormatter(values, scale, spacing):
 
 
 def show_plot(merged_raw, start_time):
+    colors = ThemeColorConfig.get_srd_theme()
+
     raw_low = merged_raw.copy().filter(l_freq=1, h_freq=70)
     raw_high = merged_raw.copy().filter(l_freq=80, h_freq=450)
     data1, times1 = raw_low[:]
     data2, times2 = raw_high[:]
     data, time = merged_raw[:]
 
+    # 创建 GraphicsView 和 Layout
     # app = pg.mkQApp('123')  # <test>
     view = GraphicsView()
-    layout = GraphicsLayout(border=(255, 255, 255))
+    layout = GraphicsLayout(border=QColor(colors["layout_border_color"]))
     view.setCentralItem(layout)
     # view.setMinimumSize(400, 300)  # 设置最小宽度为400px，最小高度为300px
     # view.resize(800, 600)
-    view.setBackground('w')
+    view.setBackground(colors["background"])
 
     # 创建三个绘图区域
     layout.setContentsMargins(10, 10, 10, 10)
     p1 = layout.addPlot(row=0, col=0)
-    p1.setTitle("<span style='color: black; font-weight: bold; font-size: 12pt;'>raw</span>")
+    p1.setTitle(f"<span style='color: {colors['title_color']}; font-weight: bold; font-size: 12pt;'>raw</span>")
     p2 = layout.addPlot(row=1, col=0)
-    p2.setTitle("<span style='color: black; font-weight: bold; font-size: 12pt;'>1-70Hz</span>")
+    p2.setTitle(f"<span style='color: {colors['title_color']}; font-weight: bold; font-size: 12pt;'>1-70Hz</span>")
     p3 = layout.addPlot(row=2, col=0)
-    p3.setTitle("<span style='color: black; font-weight: bold; font-size: 12pt;'>80-450Hz</span>")
+    p3.setTitle(f"<span style='color: {colors['title_color']}; font-weight: bold; font-size: 12pt;'>80-450Hz</span>")
     p1.setXLink(p2)  # 链接两个图的x轴
     p2.setXLink(p3)
 
     # Set axis label, width and tick colors
-    axis_pen = mkPen(color='k', width=2)  # Black color for axis and ticks
+    axis_pen = mkPen(color=colors["axis_color"], width=2)  # Black color for axis and ticks
 
     # Set axis labels and disable SI prefix
-    label_style = {'font-size': '12pt'}
+    label_style = {'font-size': '12pt', 'color': colors["axis_color"]}
     tick_font = QtGui.QFont('Arial', 11)
 
     for plot in [p1, p2, p3]:
@@ -152,9 +153,9 @@ def show_plot(merged_raw, start_time):
         plot.getAxis('left').enableAutoSIPrefix(False)
 
     # Plot
-    p1.plot(time, data[0], pen=mkPen(color='royalblue'))
-    p2.plot(times1, data1[0], pen=mkPen(color='royalblue'))
-    p3.plot(times2, data2[0], pen=mkPen(color='royalblue'))
+    p1.plot(time, data[0], pen=mkPen(color=colors["line_color"]))
+    p2.plot(times1, data1[0], pen=mkPen(color=colors["line_color"]))
+    p3.plot(times2, data2[0], pen=mkPen(color=colors["line_color"]))
 
     # Set x range to show
     for plot in [p1, p2, p3]:
@@ -164,9 +165,9 @@ def show_plot(merged_raw, start_time):
     # l2.layout.setRowStretchFactor(1, 1)  # Stretch factor for p23
 
     # Add bias
-    bias = get_bias(data2)
-    hline_p3_low = InfiniteLine(pos=-bias, angle=0, pen=mkPen(color='r', style=QtCore.Qt.DashLine))
-    hline_p3_high = InfiniteLine(pos=bias, angle=0, pen=mkPen(color='r', style=QtCore.Qt.DashLine))
+    lower_bound, upper_bound = get_bias(data2)
+    hline_p3_low = InfiniteLine(pos=lower_bound, angle=0, pen=mkPen(color='r', style=QtCore.Qt.DashLine))
+    hline_p3_high = InfiniteLine(pos=upper_bound, angle=0, pen=mkPen(color='r', style=QtCore.Qt.DashLine))
     p3.addItem(hline_p3_low)
     p3.addItem(hline_p3_high)
 
@@ -177,8 +178,8 @@ def show_plot(merged_raw, start_time):
         description = annotation['description']
 
         # Add text at the onset time
-        text_p2 = TextItem('Spike', anchor=(0.5, 1), color='r')
-        text_p3 = TextItem(description, anchor=(0.5, 1), color='r')
+        text_p2 = TextItem('Spike', anchor=(0.5, 1), color=colors["annotation_color"])
+        text_p3 = TextItem(description, anchor=(0.5, 1), color=colors["annotation_color"])
         font = QtGui.QFont()  # 设置字体
         font.setBold(True)
         font.setPointSize(14)  # Set the font size
@@ -190,11 +191,11 @@ def show_plot(merged_raw, start_time):
         p3.addItem(text_p3)
 
         # Add region
-        region_p1 = LinearRegionItem(values=(onset, onset + duration), brush=mkBrush(135, 206, 250, 50),
+        region_p1 = LinearRegionItem(values=(onset, onset + duration), brush=mkBrush(*colors["highlight_color"]),
                                      movable=False)
-        region_p2 = LinearRegionItem(values=(onset, onset + duration), brush=mkBrush(135, 206, 250, 50),
+        region_p2 = LinearRegionItem(values=(onset, onset + duration), brush=mkBrush(*colors["highlight_color"]),
                                      movable=False)
-        region_p3 = LinearRegionItem(values=(onset, onset + duration), brush=mkBrush(135, 206, 250, 50),
+        region_p3 = LinearRegionItem(values=(onset, onset + duration), brush=mkBrush(*colors["highlight_color"]),
                                      movable=False)
         p1.addItem(region_p1)
         p2.addItem(region_p2)

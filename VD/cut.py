@@ -27,7 +27,24 @@ def cut_video(input_path, output_folder, start=0, dur=3):
     video.close()
 
 
+def resample():
+    # 指定目标帧率
+    target_fps = 20
+
+    # 加载视频并修改帧率
+    clip = VideoFileClip(input_video)
+    clip_with_new_fps = clip.set_fps(target_fps)
+
+    # 保存到文件
+    clip_with_new_fps.write_videofile(output_video, codec="libx264", audio_codec="aac")
+
+
 # 调用函数进行视频剪辑
-input_file = "../test_data/test_video.mp4"  # 输入视频文件名
-output_folder = "../test_data/clips"  # 输出视频文件名
-cut_video(input_file, output_folder)
+# input_file = "../test_data/test_video.mp4"  # 输入视频文件名
+# output_folder = "../test_data/clips"  # 输出视频文件名
+# cut_video(input_file, output_folder)
+
+# 调用函数改变视频帧率
+input_video = "F:\\Python\\EAViz\\test_data\\VD\\Interictal.mp4"
+output_video = "F:\\Python\\EAViz\\test_data\\VD\\new.mp4"
+resample()

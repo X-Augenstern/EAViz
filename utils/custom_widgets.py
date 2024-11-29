@@ -7,10 +7,10 @@ from PyQt5.QtWidgets import QWidget, QLabel, QApplication, QSizePolicy, QLineEdi
 from PyQt5.QtGui import QPixmap, QCursor, QIcon
 from PyQt5.QtCore import Qt, QTimer, QSize
 from pyqtgraph.dockarea import Dock
-from utils.config import AddressConfig
-from matplotlib.figure import Figure
+from utils.config import AddressConfig, ThemeColorConfig
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.pyplot import close
+from matplotlib import rcParams
 
 
 class SaveButton(QPushButton):
@@ -158,7 +158,7 @@ class HoverLabel(SaveLabel):
                     self.hover_win.show_image(self.img, self.hover_win_size)
                 elif self.func == 1:
                     self.hover_win = HoverWindow(self, 1)
-                    self.hover_win.show_eeg_raw(self.raw, QSize(1400, 1000))
+                    self.hover_win.show_eeg_raw(self.raw, self.hover_win_size)
                 self.hover_win.show()
 
 
@@ -178,6 +178,9 @@ class HoverWindow(QWidget):
             self.label = QLabel(self)
         else:  # raw
             self.layout = QVBoxLayout(self)
+            # 去掉布局的间距和边距
+            self.layout.setSpacing(0)  # 去掉组件之间的间隔
+            self.layout.setContentsMargins(0, 0, 0, 0)  # 去掉布局的边缘间距
 
     def show_image(self, img, max_size):
         """
@@ -194,28 +197,43 @@ class HoverWindow(QWidget):
         """
         显示canvas悬浮窗
         """
-        eeg_plot = FigureCanvas(raw.plot(duration=5, n_channels=len(raw.ch_names), scalings=300e-6, show=False))
+        eeg_plot = raw.plot(duration=5, n_channels=len(raw.ch_names), scalings=300e-6, show=False)
+        # 获取第一个轴对象，通常包含图表的标题和注释
+        ax = eeg_plot.mne.ax_main
+        # 修改纵轴刻度字体属性
+        for label in ax.yaxis.get_ticklabels():
+            if ThemeColorConfig.theme == 'dark':
+                label.set_color('white')  # 字体颜色
+            label.set_weight('bold')  # 字体加粗
+            label.set_fontsize(11)  # 字体大小
+        # 遍历这个轴上的所有文本对象，设置字体
+        for text in ax.texts:
+            text.set_weight('bold')
+            text.set_fontsize(11)
+
+        eeg_fig = FigureCanvas(eeg_plot)
         close()  # More than 20 figures have been opened.
 
         # 缩放绘图以适应 max_size
-        eeg_plot.setFixedSize(max_size)
+        eeg_fig.setFixedSize(max_size)
 
-        eeg_plot.setFocusPolicy(Qt.StrongFocus)  # 将焦点策略设置为Qt.StrongFocus，以便接收键盘事件
-        eeg_plot.mpl_connect('key_press_event', key_press_event)  # mpl_connect方法将键盘事件连接到canvas上
-        self.layout.addWidget(eeg_plot)
+        eeg_fig.setFocusPolicy(Qt.StrongFocus)  # 将焦点策略设置为Qt.StrongFocus，以便接收键盘事件
+        eeg_fig.mpl_connect('key_press_event', key_press_event)  # mpl_connect方法将键盘事件连接到canvas上
+        self.layout.addWidget(eeg_fig)
 
         if raw.annotations:
             label = QLabel("SSW: Spike-slow wave", self)
             label.setAlignment(Qt.AlignCenter)  # 设置文本居中对齐
-            label.setStyleSheet("""
-                QLabel {
+            label.setStyleSheet(f"""
+                QLabel {{
                     border: 0px;
                     font-family: Arial;
                     font-size: 12pt;
-                    color: black;
+                    color: {ThemeColorConfig.get_txt_color()};
                     font-weight: bold;
-                }
-            """)
+                    background-color: {rcParams['axes.facecolor']};
+                    }}
+                """)
             self.layout.addWidget(label)
 
         self.adjustSize()  # 调整窗口大小以适应标签
@@ -427,31 +445,34 @@ class MultiFuncEdit(QLineEdit):
 #         self.restate_signal.emit()
 
 
-class CanvasDock(Dock):
+class QWidgetDock(Dock):
     """
-    Overwrite Dock to integrate FigureCanvas already loaded its figure and change the contained figure.
+    Overwrite Dock to integrate QWidget.
     """
 
-    def __init__(self, name, area, canvas=None, size=(10, 10), hideTitle=True):
-        super(CanvasDock, self).__init__(name=name, area=area, size=size, hideTitle=hideTitle)
-        if not canvas:
-            fig = Figure(facecolor='none')
-            fig.patch.set_alpha(0.0)  # 设置图形区域透明
-            canvas = FigureCanvas(fig)
-        self.addWidget(canvas)
-        self.canvas = canvas
+    def __init__(self, name, area, size=(10, 10), widget=None, hideTitle=True):
+        super(QWidgetDock, self).__init__(name=name, area=area, size=size, widget=widget, hideTitle=hideTitle)
 
-    def change_canvas(self, canvas):
-        # canvas与figure尺寸不匹配
-        # self.canvas.figure = figure
-        # self.canvas.figure.tight_layout()
-        # self.canvas.draw()
-        if self.canvas:
-            self.layout.removeWidget(self.canvas)
-            self.canvas.setParent(None)
-            self.canvas.deleteLater()
-        self.addWidget(canvas)
-        self.canvas = canvas
+        # Transparent background
+        self.setStyleSheet("background: transparent;")
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self.setAutoFillBackground(False)
+
+        # Initialize widget if provided
+        self.widget = widget
+        if self.widget:
+            self.set_widget(self.widget)
+
+    def set_widget(self, widget):
+        """
+        Dynamically replace the contained widget.
+        """
+        if self.widget and self.widget in self.layout.children():
+            self.layout.removeWidget(self.widget)
+            self.widget.setParent(None)
+            self.widget.deleteLater()
+        self.addWidget(widget)
+        self.widget = widget
 
 
 class SaveDock(Dock):

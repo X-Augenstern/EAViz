@@ -1,12 +1,12 @@
 from sys import argv, exit
-from PyQt5 import uic
-from PyQt5.QtGui import QPalette, QPixmap, QBrush
+from PyQt5.QtGui import QPalette, QPixmap, QBrush, QIcon, QColor
 from PyQt5.QtWidgets import QApplication, QFileDialog, QFrame, QMessageBox, QSizePolicy
 from PyQt5.QtCore import Qt
-from matplotlib import use
-from matplotlib.pyplot import rcParams, close, subplots, tight_layout
-from numpy import atleast_1d
+from matplotlib import use, style
+from matplotlib.patheffects import Stroke, Normal
+from matplotlib.pyplot import rcParams, subplots, tight_layout
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from numpy import atleast_1d
 from SelectSignalsForm import SelectSignalsForm
 from FilterOptionsForm import FilterOptionsForm
 from SelectSignalsForPSD import SelectSignalsForPSD
@@ -14,14 +14,18 @@ from SelectTimeSpanForTPM import SelectTimeSpanForTPM
 from ExtendServicesForm import ExtendServicesForm
 from ExportForm import ExportForm
 from utils.filter_info import FilterInfo
-from utils.eeg_plot_info import EEGPlotInfo
-from utils.config import ChannelConfig, AddressConfig
-from pyqtgraph.dockarea import DockArea
-from utils.custom_widgets import CanvasDock, SaveDock
-from qdarkstyle import load_stylesheet_pyqt5, load_stylesheet, LightPalette
+from utils.config import AddressConfig, PSDEnum, ChannelEnum, ThemeColorConfig
+from utils.eeg import get_montage
+from utils.eeg_browser_extend import EEGBrowserManager
+from utils.custom_widgets import QWidgetDock, SaveDock
 from utils.diary import Diary
-from mne import Annotations, set_config
+from pyqtgraph.dockarea import DockArea
+from mne import set_config
 from warnings import filterwarnings
+from qdarkstyle import load_stylesheet_pyqt5, load_stylesheet, LightPalette
+from qfluentwidgets import toggleTheme
+from qfluentwidgets.components.dialog_box.color_dialog import ColorDialog
+from ui.main_form_cur import Ui_Form
 
 use('Qt5Agg')
 set_config('MNE_BROWSER_BACKEND', 'matplotlib')
@@ -29,39 +33,40 @@ rcParams['font.sans-serif'] = ['Microsoft YaHei']
 rcParams['axes.unicode_minus'] = False
 filterwarnings("ignore", category=UserWarning,
                message="Starting a Matplotlib GUI outside of the main thread will likely fail.")
-ui_main_form = uic.loadUiType('ui/main_form.ui')[0]
 
 
-# set_config('MNE_BROWSER_BACKEND', 'qt')  # mne-qt-browser
+# ui_main_form = uic.loadUiType('ui/main_form_cur.ui')[0]
 
-class MainForm(QFrame, ui_main_form):
+
+class MainForm(QFrame, Ui_Form):
     def __init__(self):
         super(MainForm, self).__init__()
         self.diary = Diary(log_folder_path=AddressConfig.log_folder_path).init_logger()
         self.diary.debug('START')
         self.setupUi(self)
-        self.init_ui()
         self.adr = None
         self.select_signal_form = None
         self.eeg_list = None
         self.filter_options_form = None
         self.extend_services_form = None
         self.fi = FilterInfo()
-        self.epi = None
         self.raw = None
         self.saved_raw = None
         self.dock_area = DockArea(self)
         self.gridLayout.addWidget(self.dock_area)
-        self.eeg_dock = CanvasDock('eeg', self.dock_area)
+        self.eeg_dock = QWidgetDock('eeg', self.dock_area)
         self.dock_area.addDock(self.eeg_dock)
         self.psd_dock = None
         self.tpm_dock = None
         self.select_signals_for_psd = None
         self.select_time_span_for_tpm = None
-        self.channel_config = ChannelConfig()
         self.export_form = None
         self.t_max = None  # 最后一次sample的开始时间
         self.groupbox_list = [self.groupBox_1, self.groupBox_2, self.groupBox_3, self.groupBox_4, self.groupBox_5]
+        self.color_dialog = None
+        self.ebm = EEGBrowserManager(self)
+        self.setStyleSheet(ThemeColorConfig.get_ui_ss())
+        self.init_ui()
 
     def init_ui(self):
         # self.update_background('C:/Users/hp/Desktop/1.png')
@@ -82,15 +87,15 @@ class MainForm(QFrame, ui_main_form):
         self.custom_size_btn.clicked.connect(lambda: self.change_window_size(True))
         self.increase_signal_btn.clicked.connect(lambda: self.change_num_signals('p'))
         self.decrease_signal_btn.clicked.connect(lambda: self.change_num_signals('m'))
-        self.theme_btn.clicked.connect(lambda: change_theme(self.theme_btn.text()))
+        self.theme_btn.clicked.connect(self.change_theme)
         self.jmp_btn.clicked.connect(self.jump_to)
         self.fs_btn.clicked.connect(self.full_screen)
         self.export_btn.clicked.connect(self.export_edf)
-        self.es_btn.clicked.connect(self.extend_services)
+        self.ea_btn.clicked.connect(self.extend_services)
         self.listWidget.itemClicked.connect(self.show_ann)
         self.listWidget.itemDoubleClicked.connect(self.jump_to_ann)
-        self.rename_btn.clicked.connect(self.rename_ann)
-        self.delete_btn.clicked.connect(self.delete_ann)
+        self.rename_btn.clicked.connect(self.rename_des)
+        self.delete_btn.clicked.connect(self.delete_des)
         self.create_btn.clicked.connect(self.create_ann)
         self.duration.valueChanged.connect(self.autoset_end)
         self.start_time.valueChanged.connect(self.autoset_end)
@@ -141,52 +146,30 @@ class MainForm(QFrame, ui_main_form):
 
         if not preload:
             self.adr = adr
-            text = 'Plotting: ' + adr.split('/')[-1]
+            text = 'Loaded: ' + adr.split('/')[-1]
             self.label.setToolTip(adr.split('/')[-1])
             if len(text) > 37:
                 text = text[:34] + '...'
             self.label.setText(text)
 
-            self.epi = EEGPlotInfo(len(eeg_list))
-            self.change_size_cbx.setCurrentIndex(1)
+            # self.change_size_cbx.setCurrentIndex(1)
 
-            self.get_ann()
             self.t_max = self.raw.times[-1]
             self.end_time.setMaximum(self.t_max)
             self.start_time.setMaximum(self.t_max)
             self.duration.setMaximum(self.t_max)
 
-        self.plot_eeg(raw)
+        self.plot_eeg(self.raw)
+        self.get_ann()
         self.filter_cbx.setEnabled(True)
 
-    def plot_eeg(self, raw, start=0.0, epi_check=False):
+    def plot_eeg(self, raw, bg_color=None):
         """
-        根据raw绘制相应的eeg图
+        mne-qt-browser
         """
-        # duration：window内采样时间
-        # n_channels：window内channel数
-        # matplotlib backend
-        if epi_check:
-            if not self.epi.info_changed:
-                return
-        eeg_plot = FigureCanvas(raw.plot(duration=self.epi.window_size, start=start, n_channels=self.epi.n_channels,
-                                         scalings=self.epi.amplitude, show=False, use_opengl=True,
-                                         color='royalblue'))  # 绑定Figure到Canvas上
-        if self.epi.info_changed:
-            self.epi.info_changed = False
-        # plt.tight_layout()
-        close()  # More than 20 figures have been opened.
-        eeg_plot.setFocusPolicy(Qt.StrongFocus)  # 将焦点策略设置为Qt.StrongFocus，以便接收键盘事件
-        eeg_plot.mpl_connect('key_press_event', self.keyPressEvent)  # mpl_connect方法将键盘事件连接到canvas上
-        self.eeg_dock.change_canvas(eeg_plot)
-
-        # qt backend
-        # eeg_plot = raw.plot(duration=self.window_size, start=start, n_channels=10,
-        #                     scalings=300e-6 * self.scale_factor_percent_list[self.scale_index],
-        #                     show=False, use_opengl=True, color='royalblue')
-        # eeg_dock = Dock('eeg', widget=eeg_plot)
-        # self.dock_area.addDock(eeg_dock)
-
+        self.ebm.create_eeg_browser(raw, bg_color)
+        self.eeg_dock.set_widget(self.ebm.get_eeg_browser())
+        # print(self.ebm.eeg_browser is self.eeg_dock.widget)
         self.diary.debug('Plot EEG')
 
     def change_signals(self):
@@ -249,7 +232,7 @@ class MainForm(QFrame, ui_main_form):
 
         self.raw = raw_filtered
         self.diary.info(diary_msg)
-        self.plot_eeg(raw_filtered)
+        self.plot_eeg(self.raw)
         self.filter_cbx.setText('off')
 
     def use_filter(self, raw_to_filter, notch=0, lp=0, hp=0, bp=0):
@@ -285,8 +268,9 @@ class MainForm(QFrame, ui_main_form):
         """
         Load SelectSignalsForPSD.
         """
-        if self.raw is None:
+        if self.ebm.eeg_browser is None:
             return
+
         self.select_signals_for_psd = SelectSignalsForPSD(self)
         self.select_signals_for_psd.show()
         self.diary.debug('MainForm —> SelectSignalsForPSD')
@@ -301,21 +285,28 @@ class MainForm(QFrame, ui_main_form):
         # 当 len(para_list[0]) 为1时，plt.subplots 返回的是一个单独的 Axes 对象，而不是一个包含多个 Axes 对象的数组
         axs = atleast_1d(axs)  # 确保 axs 始终是一个数组，即使只有一个子图时也是如此
         for i, ch_name in enumerate(para_list[0]):
-            color = ChannelConfig.colors[i % len(ChannelConfig.colors)]
+            color = PSDEnum.COLORS.value[i % len(PSDEnum.COLORS.value)]
             self.raw.compute_psd(fmin=para_list[1], fmax=para_list[2], picks=ch_name).plot(
                 axes=axs[i], color=color, spatial_colors=False, dB=True, amplitude=False, show=False)
             axs[i].set_title(f'PSD for {ch_name}')
+            for line in axs[i].lines:  # 遍历该轴中的所有线条
+                line.set_path_effects([
+                    Stroke(linewidth=2, foreground="gold", alpha=0.3),  # 外层光晕
+                    Stroke(linewidth=2, foreground=color, alpha=0.5),  # 中层光晕
+                    Normal()  # 正常线条
+                ])
+                line.set_linewidth(2)  # 设置主线条宽度
         tight_layout()  # 调整子图布局
 
         if self.psd_dock is not None:
             self.psd_dock.close()
             self.psd_dock = None
 
-        psd_plot = FigureCanvas(fig)
+        psd_plot = FigureCanvas(fig)  # 绑定Figure到Canvas上
         psd_plot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         psd_plot.setFixedHeight(num_plots * 250)  # 每个子图固定高度
 
-        self.psd_dock = SaveDock('psd', area=self.dock_area, canvas=psd_plot, hideTitle=True, enable_scroll=True)
+        self.psd_dock = SaveDock('psd', area=self.dock_area, canvas=psd_plot, hideTitle=False, enable_scroll=True)
         self.dock_area.addDock(self.psd_dock, 'bottom', self.eeg_dock)
 
         if not self.psd_switch_cbx.isEnabled():
@@ -338,8 +329,9 @@ class MainForm(QFrame, ui_main_form):
         """
         Load SelectTimeSpanForTPM.
         """
-        if self.raw is None:
+        if self.ebm.eeg_browser is None:
             return
+
         self.select_time_span_for_tpm = SelectTimeSpanForTPM(self)
         self.select_time_span_for_tpm.show()
         self.diary.debug('MainForm —> SelectTimeSpanForTPM')
@@ -348,14 +340,14 @@ class MainForm(QFrame, ui_main_form):
         """
         绘制topomap图
         """
-        intersection = set(self.channel_config.topomap_channels) & set(self.eeg_list)
+        intersection = set(ChannelEnum.TPM.value) & set(self.eeg_list)
         if not intersection:
             QMessageBox.warning(self, 'Warning', 'The selected channel(s) is(are) not included in TPM channels!')
             return
 
         fig, axes = subplots(1, 5)
         raw = self.raw.copy().pick(picks=list(intersection))
-        raw.set_montage(self.channel_config.get_montage())
+        raw.set_montage(get_montage())
 
         tpm_plot = None
         tpm_title = None
@@ -414,82 +406,72 @@ class MainForm(QFrame, ui_main_form):
     def change_amplitude(self, flag):
         """
         放大/缩小/自定义信号幅度
-        :param flag: 'p'(plus) | 'm'(minus) | 'c'(custom)
         """
-        if self.raw is None:
-            return
-        if flag == 'p':
-            self.epi.minus_scale_idx()
-        elif flag == 'm':
-            self.epi.plus_scale_idx()
-        elif flag == 'c':
-            self.epi.set_base_amp(self.custom_amp.value())
-        self.plot_eeg(self.raw, epi_check=True)
-        self.diary.info(f'scale: {self.epi.amplitude}')
+        custom_amp = self.custom_amp.value() if flag == "c" else None
+        self.ebm.change_amplitude(flag, custom_amp)
 
     def change_window_size(self, custom):
         """
         改变窗口尺寸
         """
-        if self.raw is None:
-            return
         if not custom:
-            self.epi.set_window_size(int(self.change_size_cbx.currentText()[:-1]))
+            dur = int(self.change_size_cbx.currentText()[:-1])
         else:
-            if self.custom_size.value() >= self.t_max:
-                self.custom_size.setValue(self.t_max)
-            self.epi.set_window_size(self.custom_size.value())
-        self.plot_eeg(self.raw, epi_check=True)
-        self.diary.info(f'window size: {self.epi.window_size}')
+            dur = self.custom_size.value()
+        self.ebm.change_duration(dur)
 
     def change_num_signals(self, flag):
         """
         增加/减少window内channel数
-        :param flag: 'p'(plus) | 'm'(minus)
         """
-        if self.raw is None:
+        self.ebm.change_num_signals(flag)
+
+    def change_theme(self):
+        """
+        改变界面外观
+        """
+        if self.ebm.eeg_browser is None:
             return
-        if flag == 'p':
-            self.epi.plus_n_channels()
-        elif flag == 'm':
-            self.epi.minus_n_channels()
-        self.plot_eeg(self.raw, epi_check=True)
-        self.diary.info(f'channel nums: {self.epi.n_channels}')
+
+        if not self.color_dialog:
+            self.color_dialog = ColorDialog(QColor(0, 255, 255), "Choose Background Color for EEG", self,
+                                            enableAlpha=True)
+            self.color_dialog.colorChanged.connect(lambda color: self.plot_eeg(self.raw, color.name()))
+
+            # theme = self.theme_cbx.currentText()
+        # if theme == 'Light':
+        #     app.setStyleSheet(load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+
+        # 显示对话框
+        self.color_dialog.exec()
+
+        # elif theme == 'Dark':
+        #     app.setStyleSheet(load_stylesheet_pyqt5())
+        # elif theme == 'dark_teal':
+        #     # qt-material
+        #     apply_stylesheet(app, theme='dark_blue.xml')
+        # elif theme == '123':
+        #     toggleTheme()
 
     def jump_to(self):
         """
         EEG图跳转至指定时间
         """
-        if self.raw is None:
-            return
-        if self.jmp_time.value() >= self.t_max:
-            self.jmp_time.setValue(self.t_max)
-        self.plot_eeg(self.raw, start=self.jmp_time.value())
+        self.ebm.jump_to(self.jmp_time.value())
 
     def full_screen(self):
         """
         EEG图全屏
         """
-        if self.raw is None:
-            return
-        for gb in self.groupbox_list:
-            gb.setVisible(False)
-        super().showFullScreen()
-
-    def exit_full_screen(self):
-        """
-        退出EEG图全屏
-        """
-        self.showNormal()
-        for gb in self.groupbox_list:
-            gb.setVisible(True)
+        self.ebm.full_screen()
 
     def export_edf(self):
         """
         Load ExportForm.
         """
-        if self.raw is None:
+        if self.ebm.eeg_browser is None:
             return
+
         self.export_form = ExportForm(self)
         self.export_form.show()
         self.diary.debug('MainForm —> ExportForm')
@@ -510,6 +492,9 @@ class MainForm(QFrame, ui_main_form):
         """
         获取事件
         """
+        if self.ebm.eeg_browser is None:
+            return
+
         ann_list = self.raw.annotations.description
         self.listWidget.clear()
         self.listWidget.addItems(ann_list)
@@ -534,77 +519,62 @@ class MainForm(QFrame, ui_main_form):
         """
         ann_idx = self.listWidget.currentRow()
         if ann_idx >= 0:
-            self.plot_eeg(self.raw, start=self.raw.annotations[ann_idx]['onset'])
+            self.ebm.jump_to(self.raw.annotations[ann_idx]['onset'])
 
     def create_ann(self):
         """
-        添加事件
+        创建事件
         """
-        if self.raw is None:
-            return
         if self.ann_txt.text() == '':
             return
         description = self.ann_txt.text()
         onset = self.start_time.value()
         duration = self.duration.value()
+        self.ebm.create_ann(description, onset, duration)
+        # self.raw.annotations.append(onset, duration, description)
         self.diary.info('Create Ann:\n'
                         f'onset: {onset}\n,'
                         f'duration: {duration}\n'
                         f'des: {description}\n'
                         f'Max time: {self.t_max}')
-        self.raw.annotations.append(onset, duration, description)
-        self.plot_eeg(self.raw, start=onset)
         self.get_ann()
 
-    def rename_ann(self):
+    def rename_des(self):
         """
-        更新事件名
+        更改事件名
         """
-        if self.raw is None:
-            return
         ann_idx = self.listWidget.currentRow()
         if ann_idx >= 0:
             description = self.ann_txt.text()
-            # self.raw.annotations.description[ann_idx] = description  可能会失败
-            onset = self.raw.annotations.onset[ann_idx]
-            duration = self.raw.annotations.duration[ann_idx]
+            self.ebm.rename_des(ann_idx, description)
             self.diary.info(f'Rename Ann: {self.raw.annotations.description[ann_idx]} to {description}')
-            self.raw.annotations.delete(ann_idx)
-            self.raw.annotations.append(onset, duration, description)
-            self.plot_eeg(self.raw, start=self.raw.annotations[ann_idx]['onset'])
             self.get_ann()
 
-    def delete_ann(self):
+    def delete_des(self):
         """
-        删除事件
+        删除相同事件名的全部事件
         """
-        if self.raw is None:
-            return
-        ann_idx = self.listWidget.currentRow()
-        if ann_idx >= 0:
-            onset = self.raw.annotations[ann_idx]['onset']
-            self.diary.info(f'Delete Ann: {self.raw.annotations.description[ann_idx]}')
-            self.raw.annotations.delete(ann_idx)
-            self.plot_eeg(self.raw, start=onset)
+        description = self.ann_txt.text()
+        if description != '':
+            self.ebm.delete_des(description)
+            self.diary.info(f'Delete Ann: {description}')
             self.get_ann()
 
     def clear_ann(self):
         """
         清空事件
         """
-        if self.raw is None:
-            return
+        self.ebm.clear_ann()
         self.diary.info('Clear Ann')
-        self.raw.set_annotations(Annotations([], [], []))
-        self.plot_eeg(self.raw)
         self.get_ann()
 
     def autoset_end(self):
         """
         控制时间
         """
-        if self.raw is None:
+        if self.ebm.eeg_browser is None:
             return
+
         if self.end_time.value() == self.t_max:
             return
         if self.start_time.value() + self.duration.value() > self.t_max:
@@ -616,8 +586,9 @@ class MainForm(QFrame, ui_main_form):
         """
         保存事件为.txt
         """
-        if self.raw is None:
+        if self.ebm.eeg_browser is None:
             return
+
         adr, _ = QFileDialog.getSaveFileName(self, 'Save .txt', '.', 'TXT files (*.txt)')
         if adr is None or len(adr) == 0:
             return
@@ -654,7 +625,7 @@ class MainForm(QFrame, ui_main_form):
         """
         if event.key == 'escape':
             if self.isFullScreen():
-                self.exit_full_screen()
+                self.ebm.filter.exit_full_screen()
 
     def closeEvent(self, event):
         """
@@ -673,23 +644,40 @@ class MainForm(QFrame, ui_main_form):
             event.ignore()
 
 
-def change_theme(theme):
-    """
-    改变界面外观
-    """
-    if theme == 'Light':
-        # app.setStyleSheet('')
+def set_global_mode(app):
+    if ThemeColorConfig.theme == "light":
         app.setStyleSheet(load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
-        main_form.theme_btn.setText('Dark')
-    if theme == 'Dark':
+    elif ThemeColorConfig.theme == "dark":
+        style.use('dark_background')
         app.setStyleSheet(load_stylesheet_pyqt5())
-        main_form.theme_btn.setText('Light')
+        toggleTheme()
+    rcParams['savefig.facecolor'] = ThemeColorConfig.get_eai_bg()
+
+    # toggle_global_mode
+    # if ThemeColorConfig.theme == "light":
+    #     ThemeColorConfig.theme = 'dark'
+    #     style.use('dark_background')
+    #     app.setStyleSheet(load_stylesheet_pyqt5())
+    #     toggleTheme()
+    # elif ThemeColorConfig.theme == "dark":
+    #     ThemeColorConfig.theme = 'light'
+    #     style.use('default')
+    #     app.setStyleSheet(load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+    # self.setStyleSheet(ThemeColorConfig.get_ui_ss())
+    # rcParams['savefig.facecolor'] = ThemeColorConfig.get_eai_bg()
 
 
 if __name__ == "__main__":
-    # QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)  # 启用高DPI缩放
+    QApplication.setHighDpiScaleFactorRoundingPolicy(
+        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QApplication(argv)
-    app.setStyleSheet(load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+    app.setWindowIcon(QIcon(AddressConfig.get_icon_adr("icon", 'icon')))  # icon
+
+    ThemeColorConfig.theme = "light"
+    set_global_mode(app)
+
     main_form = MainForm()
     main_form.show()
     exit(app.exec_())

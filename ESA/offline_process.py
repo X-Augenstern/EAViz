@@ -1,11 +1,11 @@
 from io import BytesIO
 from cv2 import imdecode, IMREAD_COLOR, resize
 from mne import time_frequency
-from numpy import asarray, float32, empty, uint8, squeeze, transpose, flipud
+from numpy import asarray, uint8, squeeze, transpose, flipud
 from seaborn import heatmap
 from torchvision.transforms import transforms
 from matplotlib import pyplot as plt
-from torch import tensor
+from torch import float32, empty
 
 
 def plot_feature_map(layer_label, feature_map, fm_signal):
@@ -135,7 +135,7 @@ def get_stft_feature(raw, adr_stft, save=False):
         guiyihua,  # 转换为tensor格式，这个格式可以直接输入进神经网络了
     ])
 
-    stft_buffer = empty((21, 3, 32, 32), float32)
+    stft_buffer = empty((21, 3, 32, 32), dtype=float32)
     for i in range(21):
         plt.figure(figsize=(256 / 80, 256 / 80))
         # plt.pcolormesh(times, frequencies[0:16], Zxx[i], shading='auto', cmap='jet')
@@ -146,17 +146,19 @@ def get_stft_feature(raw, adr_stft, save=False):
         plt.tight_layout(pad=0)
         plt.savefig(buffer, format='png', dpi=80)
         if save:
-            plt.savefig(adr_stft + f'STFT_{i}.png', dpi=80)
+            plt.savefig(f'{adr_stft}\\STFT_{i}.png', dpi=80)
         buffer.seek(0)
         # 从内存缓冲区读取数据 —> 将数据转换为字节数组 —> 转换为 NumPy 数组 —> 从这些字节数据中解码出图像
-        im_data = imdecode(asarray(bytearray(buffer.read()), dtype=uint8), IMREAD_COLOR)  # (256,256,3)
-        im_data_resized = resize(im_data, (112, 112))  # (112,112,3)
+        im_data = imdecode(asarray(bytearray(buffer.read()), dtype=uint8), IMREAD_COLOR)  # ndarray (256,256,3)
+        im_data_resized = resize(im_data, (112, 112))  # ndarray (112,112,3)
         plt.close()
-        im_data = zuhe_transform(im_data_resized)  # (3,32,32)
-        im_data = im_data.numpy()  # (3,32,32)
-        stft_buffer[i] = im_data
-    stft_buffer = stft_buffer.transpose((1, 0, 2, 3))
-    stft_buffer = tensor(stft_buffer.astype('float32')).reshape(1, 3, 21, 32, 32)
+        im_data = zuhe_transform(im_data_resized)  # tensor (3,32,32)
+        # im_data = im_data.numpy()  # ndarray (3,32,32)
+        stft_buffer[i] = im_data  # tensor (21,3,32,32)
+    # stft_buffer = stft_buffer.transpose((1, 0, 2, 3))
+    # stft_buffer = tensor(stft_buffer.astype('float32')).reshape(1, 3, 21, 32, 32)  # tensor (1,3,21,32,32)
+    stft_buffer = stft_buffer.permute(1, 0, 2, 3).unsqueeze(0)  # tensor (1,3,21,32,32)
+
     # 1
     # img = img.reshape(1, 1, 21, 32, 32)
     # 19

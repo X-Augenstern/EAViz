@@ -184,8 +184,8 @@ class Celestial(Module):
         inPsd = self.getpsdfeature(x)
         out_tim, out_psd = self.mL(x_feature, inPsd)
         out = cat([out_psd, out_tim, out_psd], dim=-1)
-        print(out.size())
-        print("forward")
+        # print(out.size())
+        # print("forward")
         out = self.At(out)
 
         return out

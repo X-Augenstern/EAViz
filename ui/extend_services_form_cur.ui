@@ -10,13 +10,13 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>790</height>
+    <height>785</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1200</width>
-    <height>790</height>
+    <height>785</height>
    </size>
   </property>
   <property name="focusPolicy">
@@ -39,588 +39,235 @@
           <widget class="QGroupBox" name="gb_1">
            <property name="font">
             <font>
-             <pointsize>11</pointsize>
-             <weight>50</weight>
+             <family>Microsoft YaHei</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
              <italic>false</italic>
-             <bold>false</bold>
+             <bold>true</bold>
              <underline>false</underline>
              <stylestrategy>PreferDefault</stylestrategy>
              <kerning>true</kerning>
             </font>
            </property>
            <property name="title">
-            <string>Module Setting:</string>
+            <string>Module Setting</string>
            </property>
            <property name="flat">
             <bool>false</bool>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="leftMargin">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>6</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
             <item>
              <layout class="QGridLayout" name="gridLayout_5" rowstretch="0,0,0,0,0,0,0,0,0" columnstretch="0,0,0,0">
               <property name="verticalSpacing">
                <number>10</number>
               </property>
-              <item row="7" column="3">
-               <widget class="QPushButton" name="tpm_btn">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="toolTip">
-                 <string>Unclear_Signal</string>
-                </property>
+              <item row="5" column="2">
+               <widget class="ToggleButton" name="eb_btn">
                 <property name="text">
-                 <string>Repaint</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
+                 <string>Eye_B</string>
                 </property>
                </widget>
               </item>
               <item row="3" column="0">
-               <widget class="QLabel" name="label_21">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
+               <widget class="StrongBodyLabel" name="StrongBodyLabel_4">
                 <property name="text">
                  <string>Signal:</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="1" colspan="3">
-               <widget class="QLabel" name="adr_lbl">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="ad_lbl_2">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Topomap:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="2" colspan="2">
-               <widget class="QCheckBox" name="ann_cbx">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>annotate</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1" colspan="3">
-               <widget class="QPushButton" name="change_signal_btn">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Change Signals</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_67">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Plotting:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0" colspan="2">
-               <widget class="QLabel" name="ann_lbl">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Annotate the result:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QDoubleSpinBox" name="span1">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="focusPolicy">
-                 <enum>Qt::WheelFocus</enum>
-                </property>
-                <property name="maximum">
-                 <double>10000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_16">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Span(s):</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="2">
-               <widget class="QPushButton" name="eb_btn">
-                <property name="minimumSize">
-                 <size>
-                  <width>103</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="toolTip">
-                 <string>Eye_Blink</string>
-                </property>
-                <property name="text">
-                 <string>Eye_B</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="checked">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QPushButton" name="ce_btn">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="toolTip">
-                 <string>Chew_EMG</string>
-                </property>
-                <property name="text">
-                 <string>Chew_E</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1" colspan="3">
-               <widget class="QComboBox" name="service_cbx">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <item>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>ESC + SD</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>AD</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>SpiD</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>SRD</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>VD</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_20">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Method:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_17">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Module:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QPushButton" name="n_btn">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="toolTip">
-                 <string>Normal_Signal</string>
-                </property>
-                <property name="text">
-                 <string>Normal</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="2">
-               <widget class="QPushButton" name="te_btn">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="toolTip">
-                 <string>Temporal_EMG</string>
-                </property>
-                <property name="text">
-                 <string>Temporal_E</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="3">
-               <widget class="QDoubleSpinBox" name="span2">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="focusPolicy">
-                 <enum>Qt::WheelFocus</enum>
-                </property>
-                <property name="maximum">
-                 <double>10000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
               <item row="5" column="0">
-               <widget class="QLabel" name="ad_lbl_1">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
+               <widget class="StrongBodyLabel" name="ad_lbl_1">
                 <property name="text">
                  <string>Label:</string>
                 </property>
                </widget>
               </item>
+              <item row="0" column="1" colspan="3">
+               <widget class="StrongBodyLabel" name="adr_lbl">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="StrongBodyLabel" name="StrongBodyLabel_5">
+                <property name="text">
+                 <string>Span(s):</string>
+                </property>
+               </widget>
+              </item>
               <item row="5" column="3">
-               <widget class="QPushButton" name="fe_btn">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="toolTip">
-                 <string>Frontal_EMG</string>
-                </property>
+               <widget class="ToggleButton" name="fe_btn">
                 <property name="text">
                  <string>Frontal_E</string>
                 </property>
-                <property name="checkable">
+               </widget>
+              </item>
+              <item row="3" column="1" colspan="3">
+               <widget class="PrimaryPushButton" name="change_signal_btn">
+                <property name="text">
+                 <string>Change Signals</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1" colspan="3">
+               <widget class="ComboBox" name="service_cbx">
+                <property name="focusPolicy">
+                 <enum>Qt::WheelFocus</enum>
+                </property>
+                <property name="items_" stdset="0">
+                 <string>
+ESC + SD
+AD
+SpiD
+SRD
+VD</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="CompactDoubleSpinBox" name="span1">
+                <property name="maximum">
+                 <double>9999.989999999999782</double>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="ToggleButton" name="ce_btn">
+                <property name="text">
+                 <string>Chew_E</string>
+                </property>
+                <property name="checked">
                  <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="StrongBodyLabel" name="StrongBodyLabel">
+                <property name="text">
+                 <string>Loaded:</string>
                 </property>
                </widget>
               </item>
               <item row="2" column="1" colspan="3">
-               <widget class="QComboBox" name="model_cbx">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
+               <widget class="ComboBox" name="model_cbx">
                 <property name="focusPolicy">
                  <enum>Qt::WheelFocus</enum>
                 </property>
+                <property name="items_" stdset="0">
+                 <string>
+ESC + SD
+AD
+SpiD
+SRD
+VD</string>
+                </property>
                </widget>
               </item>
-              <item row="7" column="1" colspan="2">
-               <widget class="QComboBox" name="tpm_cbx">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="focusPolicy">
-                 <enum>Qt::WheelFocus</enum>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>All</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Delta (0-4 Hz)</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Theta (4-8 Hz)</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Alpha (8-12 Hz)</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Beta (12-30 Hz)</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Gamma (30-45 Hz)</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="6" column="3">
-               <widget class="QPushButton" name="u_btn">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="toolTip">
-                 <string>Unclear_Signal</string>
-                </property>
+              <item row="8" column="2" colspan="2">
+               <widget class="CheckBox" name="ann_cbx">
                 <property name="text">
-                 <string>Unclear</string>
+                 <string>annotate</string>
                 </property>
-                <property name="checkable">
-                 <bool>true</bool>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="StrongBodyLabel" name="StrongBodyLabel_2">
+                <property name="text">
+                 <string>Module:</string>
                 </property>
                </widget>
               </item>
               <item row="4" column="2">
-               <widget class="QLabel" name="to_dur_lbl">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
+               <widget class="StrongBodyLabel" name="to_dur_lbl">
                 <property name="text">
                  <string>to</string>
                 </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+               </widget>
+              </item>
+              <item row="6" column="3">
+               <widget class="ToggleButton" name="u_btn">
+                <property name="text">
+                 <string>Unclear</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="3">
+               <widget class="PrimaryPushButton" name="tpm_btn">
+                <property name="text">
+                 <string>Repaint</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="StrongBodyLabel" name="StrongBodyLabel_3">
+                <property name="text">
+                 <string>Method:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="CompactDoubleSpinBox" name="span2">
+                <property name="maximum">
+                 <double>9999.989999999999782</double>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2">
+               <widget class="ToggleButton" name="te_btn">
+                <property name="text">
+                 <string>Temporal_E</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="StrongBodyLabel" name="ad_lbl_2">
+                <property name="text">
+                 <string>Topomap:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0" colspan="2">
+               <widget class="StrongBodyLabel" name="ann_lbl">
+                <property name="text">
+                 <string>Annotate the result:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="ToggleButton" name="n_btn">
+                <property name="text">
+                 <string>Normal</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1" colspan="2">
+               <widget class="ComboBox" name="tpm_cbx">
+                <property name="items_" stdset="0">
+                 <string>All
+Delta (0-4 Hz)
+Theta (4-8 Hz)
+Alpha (8-12 Hz)
+Beta (12-30 Hz)
+Gamma (30-45 Hz)</string>
                 </property>
                </widget>
               </item>
@@ -633,84 +280,43 @@
           <widget class="QGroupBox" name="gb_2">
            <property name="font">
             <font>
-             <pointsize>11</pointsize>
+             <family>Microsoft YaHei</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
             </font>
            </property>
            <property name="title">
-            <string>Channel for Statistics Calculating:</string>
+            <string>Channel for Statistics Calculating</string>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_54">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="leftMargin">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>6</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
             <item>
-             <layout class="QGridLayout" name="gridLayout" columnstretch="0,1">
+             <layout class="QGridLayout" name="gridLayout" columnstretch="0,0">
               <property name="verticalSpacing">
                <number>10</number>
               </property>
+              <item row="0" column="1">
+               <widget class="ListWidget" name="listWidget"/>
+              </item>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_15">
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
+               <widget class="StrongBodyLabel" name="StrongBodyLabel_10">
                 <property name="text">
                  <string>Channel: </string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QListWidget" name="listWidget">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                  <weight>50</weight>
-                  <italic>false</italic>
-                  <bold>false</bold>
-                  <underline>false</underline>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                  <kerning>true</kerning>
-                 </font>
-                </property>
-                <property name="contextMenuPolicy">
-                 <enum>Qt::DefaultContextMenu</enum>
-                </property>
-                <property name="autoFillBackground">
-                 <bool>true</bool>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::NoFrame</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Sunken</enum>
-                </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QAbstractScrollArea::AdjustIgnored</enum>
-                </property>
-                <property name="selectionMode">
-                 <enum>QAbstractItemView::SingleSelection</enum>
-                </property>
-                <property name="isWrapping" stdset="0">
-                 <bool>false</bool>
-                </property>
-                <property name="sortingEnabled">
-                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -723,31 +329,38 @@
           <widget class="QGroupBox" name="gb_3">
            <property name="font">
             <font>
-             <pointsize>11</pointsize>
+             <family>Microsoft YaHei</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
             </font>
            </property>
            <property name="title">
-            <string>Analysing:</string>
+            <string>Analysing</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="leftMargin">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>6</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
             <item>
              <layout class="QGridLayout" name="gridLayout_4">
               <property name="verticalSpacing">
                <number>10</number>
               </property>
               <item row="0" column="0">
-               <widget class="QPushButton" name="start_btn">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>11</pointsize>
-                 </font>
-                </property>
+               <widget class="PrimaryPushButton" name="start_btn">
                 <property name="text">
                  <string>Start</string>
                 </property>
@@ -764,7 +377,10 @@
         <widget class="QGroupBox" name="groupBox_2">
          <property name="font">
           <font>
-           <pointsize>11</pointsize>
+           <family>Microsoft YaHei</family>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
           </font>
          </property>
          <property name="title">
@@ -860,288 +476,8 @@
                           <layout class="QVBoxLayout" name="verticalLayout_7">
                            <item>
                             <layout class="QGridLayout" name="gridLayout_6">
-                             <item row="0" column="2">
-                              <widget class="QLabel" name="label_12">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="text">
-                                <string>Segmental</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="5" column="0">
-                              <widget class="QLabel" name="label_42">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>0-4 Hz</string>
-                               </property>
-                               <property name="text">
-                                <string>δ (μv^2/Hz):</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="0">
-                              <widget class="QLabel" name="label_23">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="text">
-                                <string>Mean (μv):</string>
-                               </property>
-                              </widget>
-                             </item>
                              <item row="0" column="0">
                               <widget class="QLabel" name="label_13">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="8" column="0">
-                              <widget class="QLabel" name="label_45">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>12-30 Hz</string>
-                               </property>
-                               <property name="text">
-                                <string>β (μv^2/Hz):</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="6" column="0">
-                              <widget class="QLabel" name="label_43">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>4-8 Hz</string>
-                               </property>
-                               <property name="text">
-                                <string>θ (μv^2/Hz):</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="2">
-                              <widget class="QLabel" name="r_mean">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="2">
-                              <widget class="QLabel" name="r_var">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="0">
-                              <widget class="QLabel" name="g_mea">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="text">
-                                <string>Std (μv):</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="7" column="0">
-                              <widget class="QLabel" name="label_44">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>8-12 Hz</string>
-                               </property>
-                               <property name="text">
-                                <string>α (μv^2/Hz):</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="0">
-                              <widget class="QLabel" name="label_24">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="text">
-                                <string>Var (μv):</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="9" column="0">
-                              <widget class="QLabel" name="label_46">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>30-45 Hz</string>
-                               </property>
-                               <property name="text">
-                                <string>γ (μv^2/Hz):</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="1">
-                              <widget class="QLabel" name="g_var">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="1">
-                              <widget class="QLabel" name="g_mean">
-                               <property name="text">
-                                <string/>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="2">
-                              <widget class="QLabel" name="r_std">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="1">
-                              <widget class="QLabel" name="label">
-                               <property name="font">
-                                <font>
-                                 <family>Arial</family>
-                                 <pointsize>11</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="text">
-                                <string>Global</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="1">
-                              <widget class="QLabel" name="g_std">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="5" column="1">
-                              <widget class="QLabel" name="g_d">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="5" column="2">
-                              <widget class="QLabel" name="r_d">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="6" column="2">
-                              <widget class="QLabel" name="r_t">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="7" column="2">
-                              <widget class="QLabel" name="r_a">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="8" column="2">
-                              <widget class="QLabel" name="r_b">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="9" column="2">
-                              <widget class="QLabel" name="r_g">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="9" column="1">
-                              <widget class="QLabel" name="g_g">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="8" column="1">
-                              <widget class="QLabel" name="g_b">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="7" column="1">
-                              <widget class="QLabel" name="g_a">
-                               <property name="text">
-                                <string/>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="6" column="1">
-                              <widget class="QLabel" name="g_t">
                                <property name="text">
                                 <string/>
                                </property>
@@ -1151,6 +487,188 @@
                               <widget class="Line" name="line">
                                <property name="orientation">
                                 <enum>Qt::Horizontal</enum>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="0" column="1">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_11">
+                               <property name="text">
+                                <string>Global</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="0" column="2">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_12">
+                               <property name="text">
+                                <string>Segmental</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="1" column="0">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_13">
+                               <property name="text">
+                                <string>Mean (μv):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="2" column="0">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_14">
+                               <property name="text">
+                                <string>Std (μv):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="0">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_15">
+                               <property name="text">
+                                <string>Var (μv):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="5" column="0">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_16">
+                               <property name="text">
+                                <string>δ (μv^2/Hz):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="6" column="0">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_17">
+                               <property name="text">
+                                <string>θ (μv^2/Hz):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="7" column="0">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_18">
+                               <property name="text">
+                                <string>α (μv^2/Hz):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="8" column="0">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_19">
+                               <property name="text">
+                                <string>β (μv^2/Hz):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="9" column="0">
+                              <widget class="StrongBodyLabel" name="StrongBodyLabel_20">
+                               <property name="text">
+                                <string>γ (μv^2/Hz):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="1" column="1">
+                              <widget class="StrongBodyLabel" name="g_mean">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="2" column="1">
+                              <widget class="StrongBodyLabel" name="g_std">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="1">
+                              <widget class="StrongBodyLabel" name="g_var">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="5" column="1">
+                              <widget class="StrongBodyLabel" name="g_d">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="6" column="1">
+                              <widget class="StrongBodyLabel" name="g_t">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="7" column="1">
+                              <widget class="StrongBodyLabel" name="g_a">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="8" column="1">
+                              <widget class="StrongBodyLabel" name="g_b">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="9" column="1">
+                              <widget class="StrongBodyLabel" name="g_g">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="1" column="2">
+                              <widget class="StrongBodyLabel" name="r_mean">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="2" column="2">
+                              <widget class="StrongBodyLabel" name="r_std">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="2">
+                              <widget class="StrongBodyLabel" name="r_var">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="5" column="2">
+                              <widget class="StrongBodyLabel" name="r_d">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="6" column="2">
+                              <widget class="StrongBodyLabel" name="r_t">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="7" column="2">
+                              <widget class="StrongBodyLabel" name="r_a">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="8" column="2">
+                              <widget class="StrongBodyLabel" name="r_b">
+                               <property name="text">
+                                <string/>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="9" column="2">
+                              <widget class="StrongBodyLabel" name="r_g">
+                               <property name="text">
+                                <string/>
                                </property>
                               </widget>
                              </item>
@@ -1178,9 +696,9 @@
                           </spacer>
                          </item>
                          <item>
-                          <widget class="QLabel" name="label_2">
+                          <widget class="SubtitleLabel" name="SubtitleLabel">
                            <property name="text">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Statistical Features&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            <string>Statistical Features</string>
                            </property>
                           </widget>
                          </item>
@@ -1231,9 +749,9 @@
                           </spacer>
                          </item>
                          <item>
-                          <widget class="QLabel" name="label_3">
+                          <widget class="SubtitleLabel" name="SubtitleLabel_2">
                            <property name="text">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Model Feature&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            <string>Model Feature</string>
                            </property>
                           </widget>
                          </item>
@@ -1281,9 +799,9 @@
                           </spacer>
                          </item>
                          <item>
-                          <widget class="QLabel" name="label_4">
+                          <widget class="SubtitleLabel" name="SubtitleLabel_3">
                            <property name="text">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;STFT Figure&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            <string>STFT Figure</string>
                            </property>
                           </widget>
                          </item>
@@ -1327,9 +845,9 @@
                           </spacer>
                          </item>
                          <item>
-                          <widget class="QLabel" name="label_5">
+                          <widget class="SubtitleLabel" name="SubtitleLabel_4">
                            <property name="text">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Analysis Result&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            <string>Analysis Result</string>
                            </property>
                           </widget>
                          </item>
@@ -1386,54 +904,6 @@
                         <layout class="QVBoxLayout" name="verticalLayout_11">
                          <item>
                           <layout class="QGridLayout" name="gridLayout_7">
-                           <item row="0" column="2">
-                            <widget class="QLabel" name="label_14">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Segmental</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="5" column="0">
-                            <widget class="QLabel" name="label_47">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>0-4 Hz</string>
-                             </property>
-                             <property name="text">
-                              <string>δ (μv^2/Hz):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="0">
-                            <widget class="QLabel" name="label_33">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Mean (μv):</string>
-                             </property>
-                            </widget>
-                           </item>
                            <item row="0" column="0">
                             <widget class="QLabel" name="label_22">
                              <property name="text">
@@ -1441,235 +911,31 @@
                              </property>
                             </widget>
                            </item>
-                           <item row="8" column="0">
-                            <widget class="QLabel" name="label_48">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>12-30 Hz</string>
-                             </property>
+                           <item row="1" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_21">
                              <property name="text">
-                              <string>β (μv^2/Hz):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="6" column="0">
-                            <widget class="QLabel" name="label_49">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>4-8 Hz</string>
-                             </property>
-                             <property name="text">
-                              <string>θ (μv^2/Hz):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="2">
-                            <widget class="QLabel" name="r_mean_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="2">
-                            <widget class="QLabel" name="r_var_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="0">
-                            <widget class="QLabel" name="label_65">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Std (μv):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="7" column="0">
-                            <widget class="QLabel" name="label_50">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>8-12 Hz</string>
-                             </property>
-                             <property name="text">
-                              <string>α (μv^2/Hz):</string>
+                              <string>Mean (μv):</string>
                              </property>
                             </widget>
                            </item>
                            <item row="3" column="0">
-                            <widget class="QLabel" name="label_34">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_23">
                              <property name="text">
                               <string>Var (μv):</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="9" column="0">
-                            <widget class="QLabel" name="label_51">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>30-45 Hz</string>
-                             </property>
-                             <property name="text">
-                              <string>γ (μv^2/Hz):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="1">
-                            <widget class="QLabel" name="g_var_1">
+                           <item row="3" column="2">
+                            <widget class="StrongBodyLabel" name="r_var_1">
                              <property name="text">
                               <string/>
                              </property>
                             </widget>
                            </item>
-                           <item row="1" column="1">
-                            <widget class="QLabel" name="g_mean_1">
+                           <item row="6" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_25">
                              <property name="text">
-                              <string/>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="2">
-                            <widget class="QLabel" name="r_std_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QLabel" name="label_10">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Global</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="1">
-                            <widget class="QLabel" name="g_std_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="5" column="1">
-                            <widget class="QLabel" name="g_d_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="5" column="2">
-                            <widget class="QLabel" name="r_d_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="6" column="2">
-                            <widget class="QLabel" name="r_t_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="7" column="2">
-                            <widget class="QLabel" name="r_a_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="8" column="2">
-                            <widget class="QLabel" name="r_b_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="9" column="2">
-                            <widget class="QLabel" name="r_g_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="9" column="1">
-                            <widget class="QLabel" name="g_g_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="8" column="1">
-                            <widget class="QLabel" name="g_b_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="7" column="1">
-                            <widget class="QLabel" name="g_a_1">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="6" column="1">
-                            <widget class="QLabel" name="g_t_1">
-                             <property name="text">
-                              <string/>
+                              <string>θ (μv^2/Hz):</string>
                              </property>
                             </widget>
                            </item>
@@ -1677,6 +943,160 @@
                             <widget class="Line" name="line_2">
                              <property name="orientation">
                               <enum>Qt::Horizontal</enum>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_28">
+                             <property name="text">
+                              <string>γ (μv^2/Hz):</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_22">
+                             <property name="text">
+                              <string>Std (μv):</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="2">
+                            <widget class="StrongBodyLabel" name="r_mean_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="1">
+                            <widget class="StrongBodyLabel" name="g_mean_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="1">
+                            <widget class="StrongBodyLabel" name="g_var_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="2">
+                            <widget class="StrongBodyLabel" name="r_g_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="8" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_27">
+                             <property name="text">
+                              <string>β (μv^2/Hz):</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_24">
+                             <property name="text">
+                              <string>δ (μv^2/Hz):</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="8" column="2">
+                            <widget class="StrongBodyLabel" name="r_b_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_29">
+                             <property name="text">
+                              <string>Global</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="7" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_26">
+                             <property name="text">
+                              <string>α (μv^2/Hz):</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="2">
+                            <widget class="StrongBodyLabel" name="r_d_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="2">
+                            <widget class="StrongBodyLabel" name="r_std_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="2">
+                            <widget class="StrongBodyLabel" name="r_t_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="7" column="2">
+                            <widget class="StrongBodyLabel" name="r_a_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="1">
+                            <widget class="StrongBodyLabel" name="g_std_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="2">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_30">
+                             <property name="text">
+                              <string>Segmental</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="1">
+                            <widget class="StrongBodyLabel" name="g_d_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="1">
+                            <widget class="StrongBodyLabel" name="g_t_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="7" column="1">
+                            <widget class="StrongBodyLabel" name="g_a_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="8" column="1">
+                            <widget class="StrongBodyLabel" name="g_b_1">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="1">
+                            <widget class="StrongBodyLabel" name="g_g_1">
+                             <property name="text">
+                              <string/>
                              </property>
                             </widget>
                            </item>
@@ -1704,9 +1124,9 @@
                         </spacer>
                        </item>
                        <item>
-                        <widget class="QLabel" name="label_25">
+                        <widget class="SubtitleLabel" name="SubtitleLabel_5">
                          <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Statistical Features&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>Statistical Features</string>
                          </property>
                         </widget>
                        </item>
@@ -1806,9 +1226,9 @@
                         </spacer>
                        </item>
                        <item>
-                        <widget class="QLabel" name="label_26">
+                        <widget class="SubtitleLabel" name="SubtitleLabel_6">
                          <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Performance Metrics&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>Performance Metrics</string>
                          </property>
                         </widget>
                        </item>
@@ -1856,9 +1276,9 @@
                         </spacer>
                        </item>
                        <item>
-                        <widget class="QLabel" name="label_27">
+                        <widget class="SubtitleLabel" name="SubtitleLabel_8">
                          <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;TPM&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>TPM</string>
                          </property>
                         </widget>
                        </item>
@@ -1902,9 +1322,9 @@
                         </spacer>
                        </item>
                        <item>
-                        <widget class="QLabel" name="label_28">
+                        <widget class="SubtitleLabel" name="SubtitleLabel_9">
                          <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Analysis Result&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>Analysis Result</string>
                          </property>
                         </widget>
                        </item>
@@ -1959,51 +1379,17 @@
                         <layout class="QVBoxLayout" name="verticalLayout_12">
                          <item>
                           <layout class="QGridLayout" name="gridLayout_8">
-                           <item row="0" column="2">
-                            <widget class="QLabel" name="label_35">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
+                           <item row="3" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_33">
                              <property name="text">
-                              <string>Segmental</string>
+                              <string>Var (μv):</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="5" column="0">
-                            <widget class="QLabel" name="label_52">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>0-4 Hz</string>
-                             </property>
+                           <item row="8" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_37">
                              <property name="text">
-                              <string>δ (μv^2/Hz):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="0">
-                            <widget class="QLabel" name="label_36">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Mean (μv):</string>
+                              <string>β (μv^2/Hz):</string>
                              </property>
                             </widget>
                            </item>
@@ -2014,233 +1400,43 @@
                              </property>
                             </widget>
                            </item>
-                           <item row="8" column="0">
-                            <widget class="QLabel" name="label_53">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>12-30 Hz</string>
-                             </property>
+                           <item row="5" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_34">
                              <property name="text">
-                              <string>β (μv^2/Hz):</string>
+                              <string>δ (μv^2/Hz):</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="6" column="0">
-                            <widget class="QLabel" name="label_54">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>4-8 Hz</string>
-                             </property>
+                           <item row="0" column="2">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_40">
                              <property name="text">
-                              <string>θ (μv^2/Hz):</string>
+                              <string>Segmental</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="1" column="2">
-                            <widget class="QLabel" name="r_mean_2">
+                           <item row="1" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_31">
                              <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="2">
-                            <widget class="QLabel" name="r_var_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="0">
-                            <widget class="QLabel" name="label_66">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Std (μv):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="7" column="0">
-                            <widget class="QLabel" name="label_55">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>8-12 Hz</string>
-                             </property>
-                             <property name="text">
-                              <string>α (μv^2/Hz):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="0">
-                            <widget class="QLabel" name="label_38">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Var (μv):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="9" column="0">
-                            <widget class="QLabel" name="label_56">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
-                             <property name="toolTip">
-                              <string>30-45 Hz</string>
-                             </property>
-                             <property name="text">
-                              <string>γ (μv^2/Hz):</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="1">
-                            <widget class="QLabel" name="g_var_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="1">
-                            <widget class="QLabel" name="g_mean_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="2">
-                            <widget class="QLabel" name="r_std_2">
-                             <property name="text">
-                              <string/>
+                              <string>Mean (μv):</string>
                              </property>
                             </widget>
                            </item>
                            <item row="0" column="1">
-                            <widget class="QLabel" name="label_11">
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                               <weight>50</weight>
-                               <bold>false</bold>
-                              </font>
-                             </property>
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_39">
                              <property name="text">
                               <string>Global</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="2" column="1">
-                            <widget class="QLabel" name="g_std_2">
+                           <item row="3" column="1">
+                            <widget class="StrongBodyLabel" name="g_var_2">
                              <property name="text">
                               <string/>
                              </property>
                             </widget>
                            </item>
-                           <item row="5" column="1">
-                            <widget class="QLabel" name="g_d_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="5" column="2">
-                            <widget class="QLabel" name="r_d_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="6" column="2">
-                            <widget class="QLabel" name="r_t_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="7" column="2">
-                            <widget class="QLabel" name="r_a_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="8" column="2">
-                            <widget class="QLabel" name="r_b_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="9" column="2">
-                            <widget class="QLabel" name="r_g_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="9" column="1">
-                            <widget class="QLabel" name="g_g_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="8" column="1">
-                            <widget class="QLabel" name="g_b_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="7" column="1">
-                            <widget class="QLabel" name="g_a_2">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="6" column="1">
-                            <widget class="QLabel" name="g_t_2">
+                           <item row="1" column="2">
+                            <widget class="StrongBodyLabel" name="r_mean_2">
                              <property name="text">
                               <string/>
                              </property>
@@ -2250,6 +1446,132 @@
                             <widget class="Line" name="line_3">
                              <property name="orientation">
                               <enum>Qt::Horizontal</enum>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_38">
+                             <property name="text">
+                              <string>γ (μv^2/Hz):</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_32">
+                             <property name="text">
+                              <string>Std (μv):</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="1">
+                            <widget class="StrongBodyLabel" name="g_std_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="7" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_36">
+                             <property name="text">
+                              <string>α (μv^2/Hz):</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="1">
+                            <widget class="StrongBodyLabel" name="g_mean_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="0">
+                            <widget class="StrongBodyLabel" name="StrongBodyLabel_35">
+                             <property name="text">
+                              <string>θ (μv^2/Hz):</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="2">
+                            <widget class="StrongBodyLabel" name="r_std_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="2">
+                            <widget class="StrongBodyLabel" name="r_var_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="1">
+                            <widget class="StrongBodyLabel" name="g_d_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="1">
+                            <widget class="StrongBodyLabel" name="g_t_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="7" column="1">
+                            <widget class="StrongBodyLabel" name="g_a_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="8" column="1">
+                            <widget class="StrongBodyLabel" name="g_b_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="1">
+                            <widget class="StrongBodyLabel" name="g_g_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="2">
+                            <widget class="StrongBodyLabel" name="r_d_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="2">
+                            <widget class="StrongBodyLabel" name="r_t_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="7" column="2">
+                            <widget class="StrongBodyLabel" name="r_a_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="8" column="2">
+                            <widget class="StrongBodyLabel" name="r_b_2">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="2">
+                            <widget class="StrongBodyLabel" name="r_g_2">
+                             <property name="text">
+                              <string/>
                              </property>
                             </widget>
                            </item>
@@ -2277,9 +1599,9 @@
                         </spacer>
                        </item>
                        <item>
-                        <widget class="QLabel" name="label_29">
+                        <widget class="SubtitleLabel" name="SubtitleLabel_10">
                          <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Statistical Features&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>Statistical Features</string>
                          </property>
                         </widget>
                        </item>
@@ -2382,9 +1704,9 @@
                         </spacer>
                        </item>
                        <item>
-                        <widget class="QLabel" name="label_30">
+                        <widget class="SubtitleLabel" name="SubtitleLabel_11">
                          <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Performance Metrics&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>Performance Metrics</string>
                          </property>
                         </widget>
                        </item>
@@ -2428,9 +1750,6 @@
                         <property name="frameShape">
                          <enum>QFrame::Box</enum>
                         </property>
-                        <property name="lineWidth">
-                         <number>1</number>
-                        </property>
                         <property name="text">
                          <string/>
                         </property>
@@ -2458,9 +1777,9 @@
                         </spacer>
                        </item>
                        <item>
-                        <widget class="QLabel" name="sd_lbl">
+                        <widget class="SubtitleLabel" name="SubtitleLabel_12">
                          <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Spike Reference&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>Spike Reference</string>
                          </property>
                         </widget>
                        </item>
@@ -2504,20 +1823,9 @@
                         </spacer>
                        </item>
                        <item>
-                        <widget class="QLabel" name="sd_swi">
-                         <property name="font">
-                          <font>
-                           <pointsize>16</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
+                        <widget class="SubtitleLabel" name="sd_swi">
                          <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Analysis Result&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                          <string>Analysis Result</string>
                          </property>
                         </widget>
                        </item>
@@ -2566,7 +1874,10 @@
                  <widget class="QGroupBox" name="groupBox_4">
                   <property name="font">
                    <font>
+                    <family>Microsoft YaHei</family>
                     <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
                    </font>
                   </property>
                   <property name="title">
@@ -2575,82 +1886,6 @@
                   <layout class="QVBoxLayout" name="verticalLayout_10">
                    <item>
                     <layout class="QGridLayout" name="vd_gridLayout" columnstretch="0,0,0,1,0,0,0">
-                     <item row="0" column="1">
-                      <spacer name="horizontalSpacer_2">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item row="0" column="0">
-                      <widget class="QComboBox" name="service_cbx1">
-                       <property name="font">
-                        <font>
-                         <pointsize>11</pointsize>
-                         <weight>50</weight>
-                         <italic>false</italic>
-                         <bold>false</bold>
-                         <underline>false</underline>
-                         <stylestrategy>PreferDefault</stylestrategy>
-                         <kerning>true</kerning>
-                        </font>
-                       </property>
-                       <item>
-                        <property name="text">
-                         <string/>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>ESC + SD</string>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>AD</string>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>SpiD</string>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>SRD</string>
-                        </property>
-                       </item>
-                       <item>
-                        <property name="text">
-                         <string>VD</string>
-                        </property>
-                       </item>
-                      </widget>
-                     </item>
-                     <item row="0" column="2">
-                      <widget class="QLabel" name="label_41">
-                       <property name="font">
-                        <font>
-                         <pointsize>11</pointsize>
-                         <weight>50</weight>
-                         <italic>false</italic>
-                         <bold>false</bold>
-                         <underline>false</underline>
-                         <stylestrategy>PreferDefault</stylestrategy>
-                         <kerning>true</kerning>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Input:</string>
-                       </property>
-                      </widget>
-                     </item>
                      <item row="0" column="3">
                       <spacer name="horizontalSpacer_12">
                        <property name="orientation">
@@ -2663,72 +1898,6 @@
                         </size>
                        </property>
                       </spacer>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QComboBox" name="vd_model_cbx">
-                       <property name="font">
-                        <font>
-                         <pointsize>11</pointsize>
-                         <weight>50</weight>
-                         <italic>false</italic>
-                         <bold>false</bold>
-                         <underline>false</underline>
-                         <stylestrategy>PreferDefault</stylestrategy>
-                         <kerning>true</kerning>
-                        </font>
-                       </property>
-                       <item>
-                        <property name="text">
-                         <string>yolov5l_3dResnet</string>
-                        </property>
-                       </item>
-                      </widget>
-                     </item>
-                     <item row="1" column="4">
-                      <widget class="QCheckBox" name="vd_save_cbx">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <pointsize>11</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Save</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="4">
-                      <spacer name="horizontalSpacer_13">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item row="1" column="2">
-                      <widget class="QLabel" name="label_57">
-                       <property name="font">
-                        <font>
-                         <pointsize>11</pointsize>
-                         <weight>50</weight>
-                         <italic>false</italic>
-                         <bold>false</bold>
-                         <underline>false</underline>
-                         <stylestrategy>PreferDefault</stylestrategy>
-                         <kerning>true</kerning>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Output:</string>
-                       </property>
-                      </widget>
                      </item>
                      <item row="0" column="6">
                       <widget class="QPushButton" name="list_btn">
@@ -2771,6 +1940,32 @@ background-color: rgba(223, 223, 223, 150);
                        </property>
                       </widget>
                      </item>
+                     <item row="0" column="4">
+                      <spacer name="horizontalSpacer_13">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item row="0" column="1">
+                      <spacer name="horizontalSpacer_2">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
                      <item row="0" column="5">
                       <spacer name="horizontalSpacer_14">
                        <property name="orientation">
@@ -2784,6 +1979,46 @@ background-color: rgba(223, 223, 223, 150);
                        </property>
                       </spacer>
                      </item>
+                     <item row="0" column="0">
+                      <widget class="ComboBox" name="service_cbx1">
+                       <property name="items_" stdset="0">
+                        <string>
+ESC + SD
+AD
+SpiD
+SRD
+VD</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="ComboBox" name="vd_model_cbx">
+                       <property name="items_" stdset="0">
+                        <string>yolov5l_3dResnet</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="2">
+                      <widget class="StrongBodyLabel" name="StrongBodyLabel_41">
+                       <property name="text">
+                        <string>Input:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="2">
+                      <widget class="StrongBodyLabel" name="StrongBodyLabel_42">
+                       <property name="text">
+                        <string>Output:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="4">
+                      <widget class="CheckBox" name="vd_save_cbx">
+                       <property name="text">
+                        <string>Save</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </item>
                   </layout>
@@ -2793,7 +2028,10 @@ background-color: rgba(223, 223, 223, 150);
                  <widget class="QGroupBox" name="groupBox_3">
                   <property name="font">
                    <font>
+                    <family>Microsoft YaHei</family>
                     <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
                    </font>
                   </property>
                   <property name="title">
@@ -2840,10 +2078,6 @@ background-color: rgba(223, 223, 223, 150);
                        <property name="text">
                         <string/>
                        </property>
-                       <property name="icon">
-                        <iconset>
-                         <normaloff>../icon/start.png</normaloff>../icon/start.png</iconset>
-                       </property>
                        <property name="iconSize">
                         <size>
                          <width>35</width>
@@ -2859,33 +2093,21 @@ background-color: rgba(223, 223, 223, 150);
                       </widget>
                      </item>
                      <item>
-                      <widget class="QProgressBar" name="progressBar">
+                      <widget class="ProgressBar" name="progressBar">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
                          <height>15</height>
                         </size>
                        </property>
-                       <property name="styleSheet">
-                        <string notr="true">QProgressBar:chunk{
-border-radius:0px;
-background: rgba(55, 55, 55, 200);}
-QProgressBar{
-color: rgb(255, 255, 255);
-font:12pt;
-border-radius:1px;
-text-align:center;
-border:none;
-background-color: rgba(215, 215, 215,100);}</string>
-                       </property>
                        <property name="maximum">
                         <number>10000</number>
-                       </property>
-                       <property name="value">
-                        <number>0</number>
-                       </property>
-                       <property name="textVisible">
-                        <bool>false</bool>
                        </property>
                       </widget>
                      </item>
@@ -2971,7 +2193,10 @@ background-color: rgba(223, 223, 223, 150);
                   <widget class="QGroupBox" name="groupBox_11">
                    <property name="font">
                     <font>
+                     <family>Microsoft YaHei</family>
                      <pointsize>11</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
                     </font>
                    </property>
                    <property name="title">
@@ -2983,15 +2208,23 @@ background-color: rgba(223, 223, 223, 150);
                       <property name="verticalSpacing">
                        <number>10</number>
                       </property>
-                      <item row="1" column="0">
-                       <widget class="QDoubleSpinBox" name="iou_sb">
+                      <item row="1" column="1">
+                       <widget class="Slider" name="iou_sd">
                         <property name="enabled">
                          <bool>false</bool>
                         </property>
-                        <property name="font">
-                         <font>
-                          <pointsize>11</pointsize>
-                         </font>
+                        <property name="value">
+                         <number>45</number>
+                        </property>
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="CompactDoubleSpinBox" name="iou_sb">
+                        <property name="enabled">
+                         <bool>false</bool>
                         </property>
                         <property name="maximum">
                          <double>1.000000000000000</double>
@@ -3005,36 +2238,16 @@ background-color: rgba(223, 223, 223, 150);
                        </widget>
                       </item>
                       <item row="2" column="0" colspan="2">
-                       <widget class="QLabel" name="label_8">
-                        <property name="font">
-                         <font>
-                          <pointsize>11</pointsize>
-                         </font>
-                        </property>
+                       <widget class="StrongBodyLabel" name="StrongBodyLabel_44">
                         <property name="text">
                          <string>Confidence:</string>
                         </property>
                        </widget>
                       </item>
-                      <item row="0" column="0" colspan="2">
-                       <widget class="QLabel" name="label_7">
-                        <property name="font">
-                         <font>
-                          <pointsize>11</pointsize>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>IoU:</string>
-                        </property>
-                       </widget>
-                      </item>
                       <item row="3" column="1">
-                       <widget class="QSlider" name="conf_sd">
+                       <widget class="Slider" name="conf_sd">
                         <property name="enabled">
                          <bool>false</bool>
-                        </property>
-                        <property name="maximum">
-                         <number>100</number>
                         </property>
                         <property name="value">
                          <number>25</number>
@@ -3044,31 +2257,10 @@ background-color: rgba(223, 223, 223, 150);
                         </property>
                        </widget>
                       </item>
-                      <item row="1" column="1">
-                       <widget class="QSlider" name="iou_sd">
-                        <property name="enabled">
-                         <bool>false</bool>
-                        </property>
-                        <property name="maximum">
-                         <number>100</number>
-                        </property>
-                        <property name="value">
-                         <number>45</number>
-                        </property>
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                       </widget>
-                      </item>
                       <item row="3" column="0">
-                       <widget class="QDoubleSpinBox" name="conf_sb">
+                       <widget class="CompactDoubleSpinBox" name="conf_sb">
                         <property name="enabled">
                          <bool>false</bool>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <pointsize>11</pointsize>
-                         </font>
                         </property>
                         <property name="maximum">
                          <double>1.000000000000000</double>
@@ -3081,6 +2273,13 @@ background-color: rgba(223, 223, 223, 150);
                         </property>
                        </widget>
                       </item>
+                      <item row="0" column="0" colspan="2">
+                       <widget class="StrongBodyLabel" name="StrongBodyLabel_43">
+                        <property name="text">
+                         <string>IoU:</string>
+                        </property>
+                       </widget>
+                      </item>
                      </layout>
                     </item>
                    </layout>
@@ -3090,7 +2289,10 @@ background-color: rgba(223, 223, 223, 150);
                   <widget class="QGroupBox" name="groupBox_10">
                    <property name="font">
                     <font>
+                     <family>Microsoft YaHei</family>
                      <pointsize>11</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
                     </font>
                    </property>
                    <property name="title">
@@ -3098,15 +2300,10 @@ background-color: rgba(223, 223, 223, 150);
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_15">
                     <item>
-                     <widget class="QListWidget" name="vd_res"/>
+                     <widget class="ListWidget" name="vd_res"/>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="vd_export_btn">
-                      <property name="font">
-                       <font>
-                        <pointsize>11</pointsize>
-                       </font>
-                      </property>
+                     <widget class="PrimaryPushButton" name="vd_export_btn">
                       <property name="text">
                        <string>Save to .txt</string>
                       </property>
@@ -3130,12 +2327,7 @@ background-color: rgba(223, 223, 223, 150);
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_32" stretch="0">
        <item>
-        <widget class="QLabel" name="process_text_lbl">
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
+        <widget class="StrongBodyLabel" name="process_text_lbl">
          <property name="text">
           <string/>
          </property>
@@ -3147,12 +2339,64 @@ background-color: rgba(223, 223, 223, 150);
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QPushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>PushButton</class>
+   <extends>QPushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>PrimaryPushButton</class>
+   <extends>PushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ToggleButton</class>
+   <extends>PushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>StrongBodyLabel</class>
+   <extends>QLabel</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>SubtitleLabel</class>
+   <extends>QLabel</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ProgressBar</class>
+   <extends>QProgressBar</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>CompactDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ListWidget</class>
+   <extends>QListWidget</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
-  <tabstop>service_cbx</tabstop>
-  <tabstop>model_cbx</tabstop>
-  <tabstop>change_signal_btn</tabstop>
-  <tabstop>span1</tabstop>
-  <tabstop>span2</tabstop>
   <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources/>

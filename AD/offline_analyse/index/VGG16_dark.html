@@ -1,0 +1,167 @@
+<!--
+	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=radar&version=5.4.3&lang=js&code=PYBwLglsB2AEC8sDeAoWswFMAeYDKYAngDaYBcya616AZjPhAF7mwCMAbADSwD0vsQH3RgO39AFoqABHUAbeYBLowOragZXlA5JqB4HSo10AY2DFgAJwoByAEbEAhhoDWBtbAC-XKpDCkKqGllyGAagHEfnAwd3HHwiF0p1SNh6aEYWCgAmAAYePgERQHALQAyMhRUbGlsqeypSAHNMaAATVxtK0zBTCgBtAwBBAFFA2AMAWUwAWw6ugzwLCBAhngMvIYBdIOoPUJJWNyiaGLjWNgAWHn4hYUA_tUBo-VzVdeKaPQgKsEMAN0xdSA1TYi7qA5FTwC45QCD1QAvboBgPXENl0EFKAAt7uwUut1N9jidALuxgG7PQDPyoBy-UAIW7oooLMDAbSQEA1dYHQD0KoAKV0AC8aALk9AGIW-WoAGcocAAO4UMC6ACumAWkV5kPK-m6ECw_S6BwZjMAYDqACJTAJ_agAdTQB2xoBPDMAZ5GAReUCVRdKY6uK1pEIFUIG8ieKmizIkhYNBTP1WAYAAq6TAaCCsqDQLr9UzYChsJJJK4I9CO52uwwAJW97w-PCDIbhSTsQoRMZdboAYmxYHgtF7A8HQ-Gs_b1I6a5FY27WhoNHyjdANIRy-mwyl6-pg76ADKmIyYYjkqPqdlcnn8wVpWCAPjN6RlAH7e_cimzwzG2CWzU-ieiDYCw4tofI7kBgAAoHu8BTwLZUcABKCKHqJesBtuD34gCrAADU3QAKQGAA3Ju6iRoesEIoU6zzDYkass8tyss0NhmtQjbeH4AQHhghAgG6RomoELJ1A0WHrDhkT_gKzQAJxJAAdDs3DsAAzGxzHcTwCQ7Gxuw8AA7MxbEABxJMhUZ4d0kz9vwgAU6oAC0aAJ0OgAgmiuqqADwK_ZmGOE4fp-iICNAx7vJOZk0AcNAztyGDzkRZn2dQ267qG-7QRSAgbFZp7PBQN4gKYRr9Ky77wAAfKZtnoO5kTfr-sBhRFrJsYxmC-VESXVgldkCPBcGuQVUT0eo2XNFJUlsUk-6wAkYlsQArMxPA7Ak9VsDwUndV1ckIgpvQDEpUZGeONmFQclm6EGJmVW5_lshyTm8o-uWRPlnnxOwPmFV8K10IFZ4helLpRQgcVLZ--U0CluhwBdkVZQ-OWHYlx3lYdBwlVO_3oID8UMe9LHsWJ8JhtJrU8GwkncWJ4mSWwYlDesI2jOM40IpNi1beZTpWfjn2Lg5a1zptpM7QwO57WwB2fTT831GdsCheFl3RTdBNFQij3PZzr3ZbzR0wWVh5_RLUTA8Dt3oNVsBNFJKNI01bD1Vx3HCUkatSRr8Po1EI0zJ00t49NCWzcTlu2fljmU4Kotfeou17tLUbMyebMcxl3Mg3b30PZgP5PWlQuZSL1PfcDkvFR74s1oh6izChVCp7YEFAA
+	⚠ 请注意，该图表不是 Apache ECharts 官方示例，而是由用户代码生成的。请注意鉴别其内容。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%"; background-color: #19232d;>
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  
+  <script type="text/javascript" src="./js/echarts.min.js"></script>
+  <!-- Uncomment this line if you want to dataTool extension
+  <script type="text/javascript" src="./js/dataTool.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use gl extension
+  <script type="text/javascript" src="./js/echarts-gl.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-stat extension
+  <script type="text/javascript" src="./js/ecStat.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use map
+  <script type="text/javascript" src="./js/china.js"></script>
+  <script type="text/javascript" src="./js/world.js"></script>
+  -->
+  <!-- Uncomment these two lines if you want to use bmap extension
+  <script type="text/javascript" src="./js/api.js"></script>
+  <script type="text/javascript" src="./js/bmap.min.js"></script>
+  -->
+
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
+
+    option = {
+	backgroundColor: '#19232d', // 图表背景颜色（深色）
+  textStyle: {
+        fontSize: 16, // 设置全局默认字体大小
+        color: '#FFFFFF' // 全局文字颜色为白色
+    },
+  title: {
+    text: 'VGG16',
+    textStyle: {
+            fontSize: 20,  // 设置标题字体大小
+			color: '#FFFFFF' // 标题文字颜色
+        }
+  },
+  legend: {
+    data: ['AE', 'MemAE', 'SkipAE', 'VAE'],
+    textStyle: {
+            fontSize: 14, // 设置图例字体大小
+			color: '#FFFFFF' // 图例文字颜色
+        },
+    orient: 'vertical',    // 设置图例为垂直布局
+    right: 10,             // 设置图例距离右侧的距离
+  },
+  tooltip: {
+        // 启用提示框
+        show: true,
+        trigger: 'item', // 提示框将针对数据项触发
+  },
+  radar: {
+        indicator: [
+            { name: 'Precision', max: 100, axisLabel: { color: '#FFFFFF' }},
+            { name: 'Recall', max: 100, axisLabel: { color: '#FFFFFF' } },
+            { name: 'F1 Score', max: 100, axisLabel: { color: '#FFFFFF' } },
+            { 
+              name: 'Accurancy', max: 100,
+              axisLabel: {
+			  color: '#FFFFFF',
+                show: true, // 显示标签
+                fontSize: 12,
+                formatter: function(value, index) {
+                    return value + '%';
+                },
+              },
+            }
+        ],
+				    axisLine: {
+                lineStyle: { color: '#666666' } // 坐标轴线颜色
+            },
+            splitLine: {
+                lineStyle: { color: '#666666' } // 网格线颜色
+            },
+            splitArea: {
+                areaStyle: { color: ['#2E2E2E', '#3E3E3E'] } // 网格填充颜色
+            }
+    },
+  series: [
+    {
+      name: 'VGG16',
+      type: 'radar',
+      data: [
+        {
+          value: [90.46, 13.93, 24.14, 79.80],
+          name: 'AE',
+          //在拐点处显示数值
+          label: {
+                    // normal: {
+                    //     show: true,
+                    //     fontSize: 12,
+                    //     formatter: (params) => {
+                    //         return params.value
+                    //     },
+                    // },
+                },
+        },
+        {
+          value: [88.02, 27.59, 42.01, 82.42],
+          name: 'MemAE',
+          label: {
+                    // normal: {
+                    //     show: true,
+                    //     fontSize: 12,
+                    //     formatter: (params) => {
+                    //         return params.value
+                    //     },
+                    // },
+                },
+        },
+        {
+          value: [90.70, 10.85, 19.37, 79.17],
+          name: 'SkipAE',
+          label: {
+                    // normal: {
+                    //     show: true,
+                    //     fontSize: 12,
+                    //     formatter: (params) => {
+                    //         return params.value
+                    //     },
+                    // },
+                },
+        },
+        {
+          value: [89.17, 21.06, 34.07, 81.19],
+          name: 'VAE',
+          label: {
+                    // normal: {
+                    //     show: true,
+                    //     fontSize: 12,
+                    //     formatter: (params) => {
+                    //         return params.value
+                    //     },
+                    // },
+                },
+        }
+      ]
+    }
+  ]
+};
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+</html>

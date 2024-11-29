@@ -70,7 +70,13 @@
             </font>
            </property>
            <property name="text">
-            <string>ESA/SeiD (21 channels)</string>
+            <string>21 channels (ESC+SD)</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -100,7 +106,7 @@
             </font>
            </property>
            <property name="text">
-            <string>AD/SD (19 channels)</string>
+            <string>19 channels (AD, SpiD, SRD)</string>
            </property>
           </widget>
          </item>

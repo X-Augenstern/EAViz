@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 # from utils.config import AddressConfig
 # from subprocess import Popen
 from mne import io
+from utils.config import ChannelEnum
 
 ui_select_signals_form = uic.loadUiType('ui/select_signals_form.ui')[0]
 
@@ -20,16 +21,16 @@ class SelectSignalsForm(QWidget, ui_select_signals_form):
         self.ok_btn.clicked.connect(self.load_raw)
         self.esa_btn.clicked.connect(lambda: self.select_chns('SeiD/ESA'))
         self.sd_btn.clicked.connect(lambda: self.select_chns('AD/SD'))
-        self.listWidget.addItems(self.parent.channel_config.SeiD_ESA_channels)
+        self.listWidget.addItems(ChannelEnum.CH21.value)
         # self.yaml_btn.clicked.connect(self.open_yaml)
 
     def select_chns(self, service):
         chns = None
         self.listWidget.clearSelection()
         if service == 'SeiD/ESA':
-            chns = self.parent.channel_config.SeiD_ESA_channels
+            chns = ChannelEnum.CH21.value
         elif service == 'AD/SD':
-            chns = self.parent.channel_config.AD_SD_channels
+            chns = ChannelEnum.CH19.value
         for ch in chns:
             for i in range(self.listWidget.count()):
                 if ch == self.listWidget.item(i).text():

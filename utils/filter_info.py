@@ -1,8 +1,11 @@
 class FilterInfo:
-    """ Data structure for holding information for filtering. """
+    """
+    Data structure for holding information for filtering.
+    """
 
     def __init__(self):
-        """ Constructor of the filter info object.
+        """
+        Constructor of the filter info object.
 
             Variables:
                 hf - the upper cutoff frequency of the filter

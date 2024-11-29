@@ -1,0 +1,916 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>785</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1200</width>
+    <height>785</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Epilepsy Analysis Visualizer (EAViz)</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,2,0">
+   <item>
+    <layout class="QVBoxLayout" name="left_Layout" stretch="0,0,0,1">
+     <property name="spacing">
+      <number>4</number>
+     </property>
+     <item>
+      <widget class="QGroupBox" name="groupBox_1">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="title">
+        <string>EDF</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>8</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,0">
+          <property name="horizontalSpacing">
+           <number>5</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>3</number>
+          </property>
+          <item row="1" column="0">
+           <widget class="PrimaryPushButton" name="select_file_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Select</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="PrimaryPushButton" name="export_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Export</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <widget class="StrongBodyLabel" name="label">
+            <property name="text">
+             <string>Loaded：</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="title">
+        <string>Plotting</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>12</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <property name="horizontalSpacing">
+           <number>5</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>4</number>
+          </property>
+          <item row="1" column="0" colspan="2">
+           <widget class="PrimaryPushButton" name="change_signal_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Change Signals</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="PrimaryPushButton" name="tpm_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Topomap</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="CheckBox" name="filter_cbx">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>on</string>
+            </property>
+            <property name="tristate">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="CheckBox" name="psd_switch_cbx">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>on</string>
+            </property>
+            <property name="tristate">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="CheckBox" name="tpm_switch_cbx">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>on</string>
+            </property>
+            <property name="tristate">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="PrimaryPushButton" name="psd_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Powser Spectrum</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="PrimaryPushButton" name="change_filter_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Change Filter</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="title">
+        <string>EEG Option</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_9">
+          <property name="horizontalSpacing">
+           <number>5</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>4</number>
+          </property>
+          <item row="15" column="0" colspan="2">
+           <widget class="PrimaryPushButton" name="fs_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Full Screen</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <widget class="StrongBodyLabel" name="StrongBodyLabel_3">
+            <property name="text">
+             <string>Window Size(s):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="PrimaryPushButton" name="decrease_signal_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="PrimaryPushButton" name="increase_amp_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="ComboBox" name="change_size_cbx">
+            <property name="items_" stdset="0">
+             <string>1s
+5s
+10s
+15s
+20s
+25s
+30s
+35s
+40s
+45s
+50s</string>
+            </property>
+           </widget>
+          </item>
+          <item row="13" column="0">
+           <widget class="CompactDoubleSpinBox" name="jmp_time">
+            <property name="toolTip">
+             <string>0.00~9999.99</string>
+            </property>
+            <property name="minimum">
+             <double>0.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>9999.989999999999782</double>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="PrimaryPushButton" name="decrease_amp_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="PrimaryPushButton" name="custom_size_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Done</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="PrimaryPushButton" name="custom_amp_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Done</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="CompactDoubleSpinBox" name="custom_amp">
+            <property name="toolTip">
+             <string>1.00~9999.99</string>
+            </property>
+            <property name="minimum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>9999.989999999999782</double>
+            </property>
+            <property name="value">
+             <double>300.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="PrimaryPushButton" name="increase_signal_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="0" colspan="2">
+           <widget class="HorizontalSeparator" name="HorizontalSeparator"/>
+          </item>
+          <item row="8" column="0" colspan="2">
+           <widget class="StrongBodyLabel" name="StrongBodyLabel_2">
+            <property name="text">
+             <string>Channel:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="13" column="1">
+           <widget class="PrimaryPushButton" name="jmp_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Jump to</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="CompactDoubleSpinBox" name="custom_size">
+            <property name="toolTip">
+             <string>1.00~9999.99</string>
+            </property>
+            <property name="minimum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>9999.989999999999782</double>
+            </property>
+            <property name="value">
+             <double>5.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <widget class="StrongBodyLabel" name="StrongBodyLabel_4">
+            <property name="text">
+             <string>Amplitude(e-6V):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="1">
+           <widget class="PrimaryPushButton" name="theme_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Choose</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="0">
+           <widget class="StrongBodyLabel" name="StrongBodyLabel">
+            <property name="text">
+             <string>Theme:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_4">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="title">
+        <string>Epilepsy Analysing</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <property name="horizontalSpacing">
+           <number>5</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>3</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="PrimaryPushButton" name="ea_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Open</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <property name="spacing">
+      <number>4</number>
+     </property>
+     <item>
+      <widget class="QGroupBox" name="EEG_Figure">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="title">
+        <string>Plotting Area</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>12</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
+        <item>
+         <layout class="QGridLayout" name="gridLayout"/>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="right_Layout" stretch="0">
+     <property name="spacing">
+      <number>4</number>
+     </property>
+     <item>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="title">
+        <string>Annotation</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <property name="horizontalSpacing">
+           <number>7</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>3</number>
+          </property>
+          <item row="7" column="0" colspan="3">
+           <widget class="PrimaryPushButton" name="save_txt_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Save to .TXT</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="PrimaryPushButton" name="rename_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Rename</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="PrimaryPushButton" name="delete_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Delete</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0" colspan="3">
+           <widget class="PrimaryPushButton" name="clear_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Clear</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="3">
+           <widget class="ListWidget" name="listWidget">
+            <property name="verticalScrollBarPolicy">
+             <enum>Qt::ScrollBarAsNeeded</enum>
+            </property>
+            <property name="horizontalScrollBarPolicy">
+             <enum>Qt::ScrollBarAsNeeded</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="PrimaryPushButton" name="create_btn">
+            <property name="font">
+             <font>
+              <family>Microsoft YaHei</family>
+              <pointsize>11</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Create</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" colspan="2">
+           <widget class="LineEdit" name="ann_txt"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="CompactDoubleSpinBox" name="start_time">
+            <property name="toolTip">
+             <string>0.00~9999.99</string>
+            </property>
+            <property name="maximum">
+             <double>9999.989999999999782</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="CompactDoubleSpinBox" name="end_time">
+            <property name="toolTip">
+             <string>0.00~9999.99</string>
+            </property>
+            <property name="maximum">
+             <double>9999.989999999999782</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="CompactDoubleSpinBox" name="duration">
+            <property name="toolTip">
+             <string>0.00~9999.99</string>
+            </property>
+            <property name="maximum">
+             <double>9999.989999999999782</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="StrongBodyLabel" name="StrongBodyLabel_6">
+            <property name="text">
+             <string>Text：</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="StrongBodyLabel" name="StrongBodyLabel_7">
+            <property name="text">
+             <string>Time：</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="StrongBodyLabel" name="StrongBodyLabel_8">
+            <property name="text">
+             <string>Duration：</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QPushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>PushButton</class>
+   <extends>QPushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>PrimaryPushButton</class>
+   <extends>PushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>HorizontalSeparator</class>
+   <extends>QWidget</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>StrongBodyLabel</class>
+   <extends>QLabel</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>CompactDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ListWidget</class>
+   <extends>QListWidget</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>select_file_btn</tabstop>
+  <tabstop>export_btn</tabstop>
+  <tabstop>change_signal_btn</tabstop>
+  <tabstop>change_filter_btn</tabstop>
+  <tabstop>filter_cbx</tabstop>
+  <tabstop>psd_btn</tabstop>
+  <tabstop>psd_switch_cbx</tabstop>
+  <tabstop>tpm_btn</tabstop>
+  <tabstop>tpm_switch_cbx</tabstop>
+  <tabstop>increase_amp_btn</tabstop>
+  <tabstop>decrease_amp_btn</tabstop>
+  <tabstop>custom_amp</tabstop>
+  <tabstop>custom_amp_btn</tabstop>
+  <tabstop>change_size_cbx</tabstop>
+  <tabstop>custom_size</tabstop>
+  <tabstop>custom_size_btn</tabstop>
+  <tabstop>increase_signal_btn</tabstop>
+  <tabstop>decrease_signal_btn</tabstop>
+  <tabstop>jmp_time</tabstop>
+  <tabstop>fs_btn</tabstop>
+  <tabstop>jmp_btn</tabstop>
+  <tabstop>ea_btn</tabstop>
+  <tabstop>ann_txt</tabstop>
+  <tabstop>start_time</tabstop>
+  <tabstop>end_time</tabstop>
+  <tabstop>duration</tabstop>
+  <tabstop>rename_btn</tabstop>
+  <tabstop>delete_btn</tabstop>
+  <tabstop>create_btn</tabstop>
+  <tabstop>listWidget</tabstop>
+  <tabstop>clear_btn</tabstop>
+  <tabstop>save_txt_btn</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

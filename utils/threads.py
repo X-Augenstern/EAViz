@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QThread, pyqtSignal
 from io import BytesIO
-from utils.config import AddressConfig, ChannelConfig
+from utils.config import AddressConfig, PSDEnum, ThemeColorConfig
 from numpy import mean, std, var, ndarray, array, corrcoef
 from torch import device, tensor, load, from_numpy
 from cv2 import CAP_PROP_FRAME_COUNT, resize, VideoWriter, VideoWriter_fourcc
@@ -84,7 +84,7 @@ class StatisticsThread(QThread):
         计算指定通道平均功率谱密度（表示在每个频带中电压波动的平方均值，分布在每赫兹的频率上。）
         """
         mean_power = []
-        for freq_band in ChannelConfig.freq_bands:
+        for freq_band in PSDEnum.FREQ_BANDS.value:
             mean_power_uv2 = raw_psd.get_data(fmin=freq_band[0], fmax=freq_band[1])[index].mean() * (10 ** 6) ** 2
             mean_power.append("{:.2e}".format(mean_power_uv2))
         return mean_power
@@ -330,14 +330,17 @@ class SDBaseThread(QThread):
             event_label = "SSW: Spike-slow wave"
             # 获取了绘图的第一个轴（Axes）对象并设置图例
             eeg_plot.get_axes()[0].legend([event_label], loc='lower center', bbox_to_anchor=(0.46, -0.12),
-                                          edgecolor='white', labelcolor='black',
-                                          prop={'family': 'Arial', 'size': 12})
+                                          frameon=False, prop={'family': 'Arial', 'size': 12})
         else:
             eeg_plot = raw.plot(duration=self.duration, show=False, scalings=scaling, start=self.start_time,
                                 show_scrollbars=False)
 
         # 获取第一个轴对象，通常包含图表的标题和注释
         ax = eeg_plot.mne.ax_main
+        # 修改纵轴刻度字体属性
+        for label in ax.yaxis.get_ticklabels():
+            label.set_color(ThemeColorConfig.get_txt_color())  # 字体颜色
+            label.set_fontsize(11)  # 字体大小
         # 遍历这个轴上的所有文本对象，设置字体
         for text in ax.texts:
             text.set_weight('bold')
@@ -524,7 +527,6 @@ class VDThread(QThread):
     VD 线程
     Be careful that input_list can not be None。
     """
-    # raw_signal = pyqtSignal(ndarray)
     img_signal = pyqtSignal(ndarray)
     res_signal = pyqtSignal(str)
     percent_signal = pyqtSignal(int)
@@ -575,11 +577,9 @@ class VDThread(QThread):
         self.last_box, xyxy = self.detect(img, img0, self.last_box)
         im = img0.copy()
         if self.last_box is None:  # 未检测到患者！
-            # self.raw_signal.emit(im)
             self.img_signal.emit(im)
             self.output_frames.append(im)
         else:
-            # self.raw_signal.emit(im)
             out = annotating_box(img0, xyxy, color=self.color(1, True), line_width=self.cfg.line_thickness)
             self.img_signal.emit(out)
             self.output_frames.append(out)
@@ -612,6 +612,10 @@ class VDThread(QThread):
         """
         callback func
         """
+        self.last_box = None  # 清除上一帧检测出来的框
+        self.features = []
+        self.cnt = 0
+
         if self.save:
             if self.output_frames:
                 # 决定使用的视频尺寸：如果 video_size 有效，则使用它；否则，从当前帧获取尺寸
@@ -627,7 +631,6 @@ class VDThread(QThread):
                 self.thread_pool.submit(self.run_vd_writer, output_adr, output_frames, output_size)
 
         self.output_frames = []
-        self.cnt = 0
 
     @staticmethod
     def run_vd_writer(output_adr, output_frames, output_size):
@@ -671,6 +674,7 @@ class VDThread(QThread):
         self.features = []
         self.output_frames = []
         self.cnt = 0
+        self.last_box = None
         self.percent_signal.emit(0)
         self.thread_pool.shutdown(wait=False)
 

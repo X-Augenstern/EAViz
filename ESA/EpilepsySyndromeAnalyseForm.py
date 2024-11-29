@@ -117,7 +117,6 @@ class EpilepsySyndromeAnalyseForm(QMainWindow, ultra_v3):
         QtWidgets.QApplication.processEvents()  # 动态更新图片
 
 
-# # todo 专门为plot创建线程类
 # class PlotThread(QThread):
 #     plotSignal = pyqtSignal()
 #     plotSignal1 = pyqtSignal(torch.Tensor)
