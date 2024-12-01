@@ -124,10 +124,10 @@ def test():
     print(y)
 
 
-if __name__ == "__main__":
-    from torchsummary import summary
-
-    model = DenseNet121().cuda()
-    summary(model, (10, 1000))
+# if __name__ == "__main__":
+#     from torchsummary import summary
+#
+#     model = DenseNet121().cuda()
+#     summary(model, (10, 1000))
 
 # test()

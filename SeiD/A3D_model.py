@@ -1,23 +1,23 @@
-import torch.nn as nn
 from torch.nn.modules.utils import _triple
 # from torchsummary import summary
 # from thop import profile
-import torch
+from torch.nn import Sigmoid, Linear, ReLU, Sequential, Module, AdaptiveAvgPool2d, Conv3d, BatchNorm3d, ModuleList, \
+    MaxPool3d, AdaptiveAvgPool3d, init
 
 
 # from torch.autograd import Variable
 # from torchsummary import summary
 
 
-class SELayer(nn.Module):
+class SELayer(Module):
     def __init__(self, out_channels, reduction=16):
         super(SELayer, self).__init__()
-        self.cse_avg_pool = nn.AdaptiveAvgPool2d(1)
-        self.cse_fc = nn.Sequential(
-            nn.Linear(out_channels, out_channels * reduction, bias=False),
-            nn.ReLU(inplace=True),
-            nn.Linear(out_channels * reduction, out_channels, bias=False),
-            nn.Sigmoid()
+        self.cse_avg_pool = AdaptiveAvgPool2d(1)
+        self.cse_fc = Sequential(
+            Linear(out_channels, out_channels * reduction, bias=False),
+            ReLU(inplace=True),
+            Linear(out_channels * reduction, out_channels, bias=False),
+            Sigmoid()
         )
 
     def forward(self, x):
@@ -30,7 +30,7 @@ class SELayer(nn.Module):
         return cse_y
 
 
-class SpatioTemporalConv(nn.Module):
+class SpatioTemporalConv(Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, bias=False):
         super(SpatioTemporalConv, self).__init__()
 
@@ -39,10 +39,10 @@ class SpatioTemporalConv(nn.Module):
         stride = _triple(stride)
         padding = _triple(padding)
 
-        self.temporal_spatial_conv = nn.Conv3d(in_channels, out_channels, kernel_size,
-                                               stride=stride, padding=padding, bias=bias)
-        self.bn = nn.BatchNorm3d(out_channels)
-        self.relu = nn.ReLU()
+        self.temporal_spatial_conv = Conv3d(in_channels, out_channels, kernel_size,
+                                            stride=stride, padding=padding, bias=bias)
+        self.bn = BatchNorm3d(out_channels)
+        self.relu = ReLU()
 
     def forward(self, x):
         x = self.bn(self.temporal_spatial_conv(x))
@@ -50,7 +50,7 @@ class SpatioTemporalConv(nn.Module):
         return x
 
 
-class SpatioTemporalResBlock(nn.Module):
+class SpatioTemporalResBlock(Module):
     def __init__(self, in_channels, out_channels, kernel_size, output, downsample=False):
         super(SpatioTemporalResBlock, self).__init__()
 
@@ -67,20 +67,20 @@ class SpatioTemporalResBlock(nn.Module):
         if self.downsample:
             # downsample with stride =2 the input x
             self.downsampleconv = SpatioTemporalConv(in_channels, out_channels, 1, stride=2)
-            self.downsamplebn = nn.BatchNorm3d(out_channels)
+            self.downsamplebn = BatchNorm3d(out_channels)
 
             # downsample with stride = 2when producing the residual
             self.conv1 = SpatioTemporalConv(in_channels, out_channels, kernel_size, padding=padding, stride=2)
         else:
             self.conv1 = SpatioTemporalConv(in_channels, out_channels, kernel_size, padding=padding)
 
-        self.bn1 = nn.BatchNorm3d(out_channels)
-        self.relu1 = nn.ReLU()
+        self.bn1 = BatchNorm3d(out_channels)
+        self.relu1 = ReLU()
 
         # standard conv->batchnorm->ReLU
         self.conv2 = SpatioTemporalConv(out_channels, out_channels, kernel_size, padding=padding)
-        self.bn2 = nn.BatchNorm3d(out_channels)
-        self.outrelu = nn.ReLU()
+        self.bn2 = BatchNorm3d(out_channels)
+        self.outrelu = ReLU()
 
         self.se = SELayer(output)
 
@@ -95,7 +95,7 @@ class SpatioTemporalResBlock(nn.Module):
         return self.outrelu(x + res)
 
 
-class SpatioTemporalResLayer(nn.Module):
+class SpatioTemporalResLayer(Module):
     def __init__(self, in_channels, out_channels, kernel_size, output, layer_size, block_type=SpatioTemporalResBlock,
                  downsample=False):
 
@@ -105,7 +105,7 @@ class SpatioTemporalResLayer(nn.Module):
         self.block1 = block_type(in_channels, out_channels, kernel_size, output, downsample)
 
         # prepare module list to hold all (layer_size - 1) blocks
-        self.blocks = nn.ModuleList([])
+        self.blocks = ModuleList([])
         for i in range(layer_size - 1):
             # all these blocks are identical, and have downsample = False by default
             self.blocks += [block_type(out_channels, out_channels, kernel_size, output)]
@@ -118,13 +118,13 @@ class SpatioTemporalResLayer(nn.Module):
         return x
 
 
-class R3DNet(nn.Module):
+class R3DNet(Module):
     def __init__(self, layer_sizes, block_type=SpatioTemporalResBlock):
         super(R3DNet, self).__init__()
 
         # first conv, with stride 1x2x2 and kernel size 3x7x7
         self.conv1 = SpatioTemporalConv(3, 64, [3, 7, 7], stride=[1, 2, 2], padding=[1, 3, 3])
-        self.maxpool = nn.MaxPool3d(kernel_size=2, stride=2, padding=1)
+        self.maxpool = MaxPool3d(kernel_size=2, stride=2, padding=1)
         # output of conv2 is same size as of conv1, no downsampling needed. kernel_size 3x3x3
         self.conv2 = SpatioTemporalResLayer(64, 64, 3, layer_sizes[0], block_type=block_type)
         # each of the final three layers doubles num_channels, while performing downsampling
@@ -134,7 +134,7 @@ class R3DNet(nn.Module):
         self.conv5 = SpatioTemporalResLayer(256, 512, 3, layer_sizes[3], block_type=block_type, downsample=True)
 
         # global average pooling of the output
-        self.pool = nn.AdaptiveAvgPool3d(1)
+        self.pool = AdaptiveAvgPool3d(1)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -149,7 +149,7 @@ class R3DNet(nn.Module):
         return x.view(-1, 512)
 
 
-class R3DClassifier(nn.Module):
+class R3DClassifier(Module):
     r"""Forms a complete ResNet classifier producing vectors of size num_classes, by initializng 5 layers,
     with the number of blocks in each layer set by layer_sizes, and by performing a global average pool
     at the end producing a 512-dimensional vector for each element in the batch,
@@ -166,18 +166,18 @@ class R3DClassifier(nn.Module):
 
         self.res3d = R3DNet(layer_sizes, block_type)
 
-        self.age_fc_layers = torch.nn.Sequential(
-            torch.nn.Linear(512, 256),
-            torch.nn.ReLU(),
-            torch.nn.Linear(256, 2),
-            torch.nn.Sigmoid()
+        self.age_fc_layers = Sequential(
+            Linear(512, 256),
+            ReLU(),
+            Linear(256, 2),
+            Sigmoid()
         )
 
         # 预测gender（分类）
-        self.gender_fc_layers = torch.nn.Sequential(
-            torch.nn.Linear(512, 256),
-            torch.nn.ReLU(),
-            torch.nn.Linear(256, 2)
+        self.gender_fc_layers = Sequential(
+            Linear(512, 256),
+            ReLU(),
+            Linear(256, 2)
         )
 
         # self.linear = nn.Linear(512, num_classes)
@@ -214,9 +214,9 @@ class R3DClassifier(nn.Module):
 
     def __init_weight(self):
         for m in self.modules():
-            if isinstance(m, nn.Conv3d):
-                nn.init.kaiming_normal_(m.weight)
-            elif isinstance(m, nn.BatchNorm3d):
+            if isinstance(m, Conv3d):
+                init.kaiming_normal_(m.weight)
+            elif isinstance(m, BatchNorm3d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
 

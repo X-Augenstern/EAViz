@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from matplotlib import use, style
 from matplotlib.patheffects import Stroke, Normal
 from matplotlib.pyplot import rcParams, subplots, tight_layout
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from numpy import atleast_1d
 from SelectSignalsForm import SelectSignalsForm
 from FilterOptionsForm import FilterOptionsForm

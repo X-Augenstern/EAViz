@@ -1,9 +1,16 @@
-import torch
+from torch import no_grad, from_numpy, mean, sigmoid, tensor, float64, cat, zeros as t_zeros, load
 from torch.nn.functional import mse_loss
 from numpy import interp, arange, zeros, concatenate, multiply
-from AD.tools import PrepareModel1, PrepareModel2
 from AD.config import config
 from AD.AE_config import MyConfig  # 导入AE配置文件
+from AD.model.Loss import classLoss  # 引入损失的类函数
+from AD.model.R2D import resnet34  # model 1
+from AD.model.senet import SENet18  # model 2
+from AD.model.densenet import DenseNet121  # model 3
+from AD.model.vgg import VGG16  # model 4
+from AD.model.googlenet import GoogLeNet
+from AD.AE_Combine import AutoEncoder, SkipAutoEncoder, MemAutoEncoder, EstimatorAutoEncoder, VAE, \
+    Resnet_Encoder  # 导入AE模型
 from mne import Annotations
 from mne.viz import plot_raw
 from io import BytesIO
@@ -29,7 +36,7 @@ def Art_Dec(Hdl_Var, arti_list, raw, st, mod1, mod2, res_signal, auto=False):
     Preds = []
     AE_index = []
 
-    with torch.no_grad():
+    with no_grad():
         outAE = 0
         X = Hdl_Var  # (11,10,1000)
         batch_size = len(X)  # 11
@@ -50,53 +57,53 @@ def Art_Dec(Hdl_Var, arti_list, raw, st, mod1, mod2, res_signal, auto=False):
                     c = interp(b, a, N)  # 线性插值得到b在(a,N)上的y值 (1024,)
                     Y.append(c)
                 X1[i, :, :] = Y
-            X1 = torch.from_numpy(X1).float().cuda()  # (11,10,1024)
+            X1 = from_numpy(X1).float().cuda()  # (11,10,1024)
             outAE = model2(X1)  # (11,10,1024)
             # 求不同的Mse
-            MSE = torch.mean(mse_loss(X1, outAE[0], reduction='none'), dim=2)  # (11,10)
+            MSE = mean(mse_loss(X1, outAE[0], reduction='none'), dim=2)  # (11,10)
         else:
             output = model2(X)
             for i in range(5):
                 outAE += output[0][i]
             outAE = outAE / 5
-            MSE = torch.mean(mse_loss(X, outAE, reduction='none'), dim=2)
+            MSE = mean(mse_loss(X, outAE, reduction='none'), dim=2)
         # 映射
 
-        Area = torch.zeros(batch_size, 3)  # (11,3)
+        Area = t_zeros(batch_size, 3)  # (11,3)
         Area[:, 0] = (MSE[:, 0] + MSE[:, 1]) / 2
         Area[:, 1] = (MSE[:, 2] + MSE[:, 3] + MSE[:, 4] + MSE[:, 5]) / 4
         Area[:, 2] = (MSE[:, 6] + MSE[:, 7] + MSE[:, 8] + MSE[:, 9]) / 4
         AE_preds = []
         for i in range(batch_size):
-            torch.sigmoid(Area)
+            sigmoid(Area)
             aa = Area[i, :].tolist()  # 类型转换
             aa.append(0.95)  # 将阈值拼接到一起  阈值所在位置为 3
-            Temp = torch.tensor(aa)
+            Temp = tensor(aa)
             index = Temp.sort(0, True).indices.numpy()  # 排序数据  并得到其下标
             # 阈值最大的情况
             if index[0] == 3:  # 正常数据   000001
-                tempa = torch.tensor([0, 0, 0, 0, 0, 1], dtype=torch.float64)
+                tempa = tensor([0, 0, 0, 0, 0, 1], dtype=float64)
             elif index[1] == 3:  # 阈值第二大的情况
                 if index[0] == 0:  # 额区异常 110000
-                    tempa = torch.tensor([1, 1, 0, 0, 0, 0], dtype=torch.float64)
+                    tempa = tensor([1, 1, 0, 0, 0, 0], dtype=float64)
                 elif index[0] == 1:  # 颞区异常001100
-                    tempa = torch.tensor([0, 0, 1, 1, 0, 0], dtype=torch.float64)
+                    tempa = tensor([0, 0, 1, 1, 0, 0], dtype=float64)
                 else:  # 全局异常000010
-                    tempa = torch.tensor([0, 0, 0, 0, 1, 0], dtype=torch.float64)
+                    tempa = tensor([0, 0, 0, 0, 1, 0], dtype=float64)
             elif index[2] == 3:  # 阈值第三大的情况
                 if index[3] == 0:  # 额区颞区均异常111100
-                    tempa = torch.tensor([1, 1, 1, 1, 0, 0], dtype=torch.float64)
+                    tempa = tensor([1, 1, 1, 1, 0, 0], dtype=float64)
                 elif index[3] == 1:  # 颞区强异常001100
-                    tempa = torch.tensor([0, 0, 1, 1, 0, 0], dtype=torch.float64)
+                    tempa = tensor([0, 0, 1, 1, 0, 0], dtype=float64)
                 else:  # 全局异常000010
-                    tempa = torch.tensor([0, 0, 0, 0, 1, 0], dtype=torch.float64)
+                    tempa = tensor([0, 0, 0, 0, 1, 0], dtype=float64)
             elif index[3] == 3:  # 阈值最小的情况 全局异常000010
-                tempa = torch.tensor([0, 0, 0, 0, 1, 0], dtype=torch.float64)
+                tempa = tensor([0, 0, 0, 0, 1, 0], dtype=float64)
             AE_preds.append(tempa.unsqueeze(0))
         # 合并每次数据
-        AE_preds = torch.cat(AE_preds, 0)
+        AE_preds = cat(AE_preds, 0)
         # Labels.append(label.cpu().numpy())  # 真实标签累计
-        Preds.append(torch.sigmoid(pred).cpu().numpy())  # 深度模型预估标签累计 tensor to list
+        Preds.append(sigmoid(pred).cpu().numpy())  # 深度模型预估标签累计 tensor to list
         AE_index.append(AE_preds.cpu().numpy())  # 异常检测模型预估标签累计
 
     dp_pred = concatenate(Preds, 0)  # 深度模型预测
@@ -276,3 +283,58 @@ def Art_Dec(Hdl_Var, arti_list, raw, st, mod1, mod2, res_signal, auto=False):
                 annotations_list.append([onset, duration, des])
 
     return annotations_list, des_list
+
+
+def PrepareModel1(cfg, test=False):
+    printout = 'Using Model: ' + cfg.model
+    if cfg.model == 'Resnet34':
+        model = resnet34(loss=classLoss())  # 修改损失
+        print('***************************************** Using ResNet34 *****************************************')
+    elif cfg.model == 'SENet18':
+        model = SENet18(loss=classLoss())  # 修改损失
+        print('***************************************** Using SENet18 *****************************************')
+    elif cfg.model == 'DenseNet121':
+        model = DenseNet121(loss=classLoss())
+        print('***************************************** Using DenseNet121 *****************************************')
+    elif cfg.model == "VGG16":
+        model = VGG16(loss=classLoss())
+        print('******************************************* Using VGG16 *******************************************')
+    elif cfg.model == "GoogLeNet":
+        model = GoogLeNet(loss=classLoss())
+    else:
+        raise NotImplementedError
+    if test:
+        state_dict = load(cfg.test_weight)['state_dict']
+        model.load_state_dict(state_dict)
+        print(' Weight_path: ' + cfg.test_weight)
+    print(printout)
+    return model.float().cuda()
+
+
+def PrepareModel2(cfg, weight=None):  # AE 的模型
+    assert cfg.model in ['AE', 'SkipAE', 'MemAE', 'EstimatorAutoEncoder', 'VAE', 'Resnet_Encoder']
+    if cfg.model == 'AE':
+        model = AutoEncoder(with_last_relu=cfg.with_last_relu)
+        print('***************************************** Using AE *****************************************')
+    elif cfg.model == 'SkipAE':
+        model = SkipAutoEncoder(with_last_relu=cfg.with_last_relu)
+        print('***************************************** Using SkipAE *****************************************')
+    elif cfg.model == 'MemAE':
+        model = MemAutoEncoder(with_last_relu=cfg.with_last_relu)
+        print('***************************************** Using MemAE *****************************************')
+    elif cfg.model == 'EstimatorAutoEncoder':
+        model = EstimatorAutoEncoder(with_last_relu=cfg.with_last_relu)
+    elif cfg.model == 'Resnet_Encoder':
+        model = Resnet_Encoder(with_last_relu=cfg.with_last_relu)
+    elif cfg.model == 'VAE':
+        model = VAE(1000)
+        print('***************************************** Using VAE *****************************************')
+    else:
+        raise NotImplementedError
+    if weight:
+        state_dict = load(weight)['state_dict']
+        model.load_state_dict(state_dict)
+        print(f'loading model {cfg.model} with weight {weight}')
+    else:
+        print(f'loading model {cfg.model}')
+    return model.float().cuda()

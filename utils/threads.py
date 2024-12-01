@@ -3,7 +3,7 @@ from io import BytesIO
 from utils.config import AddressConfig, PSDEnum, ThemeColorConfig
 from numpy import mean, std, var, ndarray, array, corrcoef
 from torch import device, tensor, load, from_numpy
-from cv2 import CAP_PROP_FRAME_COUNT, resize, VideoWriter, VideoWriter_fourcc
+from cv2 import CAP_PROP_FRAME_COUNT, resize, VideoWriter
 from concurrent.futures import ThreadPoolExecutor
 from os import path, makedirs
 from mne import Annotations, read_evokeds
@@ -714,7 +714,7 @@ class VDWriteThread(QThread):
 
     def run(self):
         self.running = True
-        fourcc = VideoWriter_fourcc(*"mp4v")
+        fourcc = VideoWriter.fourcc(*"mp4v")
         output_video = VideoWriter(self.output_adr, fourcc, 20, self.output_size)
         for frame in self.output_frames:
             if not self.running:
