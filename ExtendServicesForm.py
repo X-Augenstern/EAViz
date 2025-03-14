@@ -634,7 +634,7 @@ class ExtendServicesForm(QWidget, Ui_Form):
         if len(ann_list) > 0:
             for a in ann_list:
                 self.parent.raw.annotations.append(a[0], a[1], a[2])
-            self.parent.plot_eeg(self.parent.raw, start=start_time)
+            self.parent.plot_eeg(self.parent.raw)
             self.parent.get_ann()
             self.raw = self.parent.raw.copy()
         self.set_process_txt(10)

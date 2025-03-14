@@ -1,7 +1,7 @@
 from time import time
-from cv2 import rectangle, LINE_AA, getTextSize, putText, resize, VideoWriter, VideoWriter_fourcc
+from cv2 import rectangle, LINE_AA, getTextSize, putText
 from numpy import asarray, stack, copy
-import torch
+from torch import zeros, cat, Tensor, mm, min as t_min, max as t_max, tensor, no_grad, argmax, from_numpy
 from torchvision.ops import nms
 
 
@@ -26,18 +26,18 @@ def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=Non
 
     t = time()
     mi = 5 + nc  # mask start index
-    output = [torch.zeros((0, 6 + nm), device=prediction.device)] * bs
+    output = [zeros((0, 6 + nm), device=prediction.device)] * bs
     for xi, x in enumerate(prediction):  # image index, image inference
         x = x[xc[xi]]  # confidence
 
         # Cat apriori labels if autolabelling
         if labels and len(labels[xi]):
             lb = labels[xi]
-            v = torch.zeros((len(lb), nc + nm + 5), device=x.device)
+            v = zeros((len(lb), nc + nm + 5), device=x.device)
             v[:, :4] = lb[:, 1:5]  # box
             v[:, 4] = 1.0  # conf
             v[range(len(lb)), lb[:, 0].long() + 5] = 1.0  # cls
-            x = torch.cat((x, v), 0)
+            x = cat((x, v), 0)
 
         if not x.shape[0]:
             output = None
@@ -53,14 +53,14 @@ def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=Non
         # Detections matrix nx6 (xyxy, conf, cls)
         if multi_label:
             i, j = (x[:, 5:mi] > conf_thres).nonzero(as_tuple=False).T
-            x = torch.cat((box[i], x[i, 5 + j, None], j[:, None].float(), mask[i]), 1)
+            x = cat((box[i], x[i, 5 + j, None], j[:, None].float(), mask[i]), 1)
         else:  # best class only
             conf, j = x[:, 5:mi].max(1, keepdim=True)
-            x = torch.cat((box, conf, j.float(), mask), 1)[conf.view(-1) > conf_thres]
+            x = cat((box, conf, j.float(), mask), 1)[conf.view(-1) > conf_thres]
 
         # Filter by class
         if classes is not None:
-            x = x[(x[:, 5:6] == torch.tensor(classes, device=x.device)).any(1)]
+            x = x[(x[:, 5:6] == tensor(classes, device=x.device)).any(1)]
 
         # Check shape
         n = x.shape[0]  # number of boxes
@@ -82,7 +82,7 @@ def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=Non
             # update boxes as boxes(i,4) = weights(i,n) * boxes(n,4)
             iou = box_iou(boxes[i], boxes) > iou_thres  # iou matrix
             weights = iou * scores[None]  # box weights
-            x[i, :4] = torch.mm(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
+            x[i, :4] = mm(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
             if redundant:
                 i = i[iou.sum(1) > 1]  # require redundancy
         output[xi] = x[i]
@@ -94,7 +94,7 @@ def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=Non
 
 def xywh2xyxy(x):
     # Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
-    y = x.clone() if isinstance(x, torch.Tensor) else copy(x)
+    y = x.clone() if isinstance(x, Tensor) else copy(x)
     y[:, 0] = x[:, 0] - x[:, 2] / 2  # top left x
     y[:, 1] = x[:, 1] - x[:, 3] / 2  # top left y
     y[:, 2] = x[:, 0] + x[:, 2] / 2  # bottom right x
@@ -105,7 +105,7 @@ def xywh2xyxy(x):
 def box_iou(box1, box2, eps=1e-7):
     # inter(N,M) = (rb(N,M,2) - lt(N,M,2)).clamp(0).prod(2)
     (a1, a2), (b1, b2) = box1[:, None].chunk(2, 2), box2.chunk(2, 1)
-    inter = (torch.min(a2, b2) - torch.max(a1, b1)).clamp(0).prod(2)
+    inter = (t_min(a2, b2) - t_max(a1, b1)).clamp(0).prod(2)
     # IoU = inter / (area1 + area2 - inter)
     return inter / (box_area(box1.T)[:, None] + box_area(box2.T) - inter + eps)
 
@@ -132,7 +132,7 @@ def scale_coords(img1_shape, coords, img0_shape, ratio_pad=None):
 
 def clip_coords(boxes, shape):
     # Clip bounding xyxy bounding boxes to image shape (height, width)
-    if isinstance(boxes, torch.Tensor):  # faster individually
+    if isinstance(boxes, Tensor):  # faster individually
         boxes[:, 0].clamp_(0, shape[1])  # x1
         boxes[:, 1].clamp_(0, shape[0])  # y1
         boxes[:, 2].clamp_(0, shape[1])  # x2
@@ -165,14 +165,14 @@ def annotating_box(im, box, label='', color=(128, 128, 128),
     return asarray(im)
 
 
-@torch.no_grad()
+@no_grad()
 def actionRecognition(actionModel, imgs, device):
     try:
         imgs = stack(imgs)
         imgs = imgs.transpose(3, 0, 1, 2)
-        imgs = torch.from_numpy(imgs).to(device).float().unsqueeze(0)
+        imgs = from_numpy(imgs).to(device).float().unsqueeze(0)
         res = actionModel(imgs)
-        patientstate = torch.argmax(res).cpu()
+        patientstate = argmax(res).cpu()
         return 'Seizure' if patientstate == 1 else 'Interictal'
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -222,43 +222,42 @@ def detect(img, img0, last_box, model, cfg):
     color   Colors的实例化对象
 """
 
-
-def vd_api(dataset, output_path, model1, model2, last_box, cfg, color):
-    features = []
-    cnt = 0
-    dataset = iter(dataset)
-
-    output_frames = []
-
-    while True:
-        if cnt >= 60:
-            break
-        cnt += 1
-
-        path, img, img0, vid_cap = next(dataset)
-        if img is None:
-            break
-        im = img0.copy()
-
-        last_box, xyxy = detect(img, img0, last_box, model1, cfg)
-        if last_box is None:
-            print('未检测到患者')
-            return None
-
-        res_frame = img0.copy()  # 创建一个副本用于绘制标注框
-        res1 = annotating_box(res_frame, xyxy, color=color(1, True), line_width=cfg.line_thickness)
-        output_frames.append(res1)
-
-    features.append(resize(im[int(xyxy[1]):int(xyxy[3]),
-                           int(xyxy[0]):int(xyxy[2])],
-                           (112, 112)))
-    res2 = actionRecognition(model2, features, cfg.device)
-
-    output_width, output_height = output_frames[0].shape[1], output_frames[0].shape[0]
-    fourcc = VideoWriter_fourcc(*"mp4v")
-    output_video = VideoWriter(output_path, fourcc, 20, (output_width, output_height))
-    for frame in output_frames:
-        output_video.write(frame)
-    output_video.release()
-
-    return res2, last_box
+# def vd_api(dataset, output_path, model1, model2, last_box, cfg, color):
+#     features = []
+#     cnt = 0
+#     dataset = iter(dataset)
+#
+#     output_frames = []
+#
+#     while True:
+#         if cnt >= 60:
+#             break
+#         cnt += 1
+#
+#         path, img, img0, vid_cap = next(dataset)
+#         if img is None:
+#             break
+#         im = img0.copy()
+#
+#         last_box, xyxy = detect(img, img0, last_box, model1, cfg)
+#         if last_box is None:
+#             print('未检测到患者')
+#             return None
+#
+#         res_frame = img0.copy()  # 创建一个副本用于绘制标注框
+#         res1 = annotating_box(res_frame, xyxy, color=color(1, True), line_width=cfg.line_thickness)
+#         output_frames.append(res1)
+#
+#     features.append(resize(im[int(xyxy[1]):int(xyxy[3]),
+#                            int(xyxy[0]):int(xyxy[2])],
+#                            (112, 112)))
+#     res2 = actionRecognition(model2, features, cfg.device)
+#
+#     output_width, output_height = output_frames[0].shape[1], output_frames[0].shape[0]
+#     fourcc = VideoWriter_fourcc(*"mp4v")
+#     output_video = VideoWriter(output_path, fourcc, 20, (output_width, output_height))
+#     for frame in output_frames:
+#         output_video.write(frame)
+#     output_video.release()
+#
+#     return res2, last_box

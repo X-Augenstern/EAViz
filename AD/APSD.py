@@ -4,7 +4,7 @@ from mne import create_info, EvokedArray
 from matplotlib.pyplot import savefig, close
 from io import BytesIO
 from utils.config import PSDEnum, ChannelEnum
-from utils.eeg import get_montage
+from utils.edf import EdfUtil
 
 
 def APSD(data, tmin, tmax, fb_idx, topo_signal=None):  # size
@@ -23,7 +23,7 @@ def APSD(data, tmin, tmax, fb_idx, topo_signal=None):  # size
         times = tmin
     else:
         times = arange(tmin, tmax)  # size
-    evoked.set_montage(get_montage())
+    evoked.set_montage(EdfUtil.get_montage())
     tpm = evoked.plot_topomap(times, ch_type="eeg", show=False, nrows=3, ncols=4)
 
     buffer = BytesIO()

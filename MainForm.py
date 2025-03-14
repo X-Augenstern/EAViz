@@ -15,7 +15,7 @@ from ExtendServicesForm import ExtendServicesForm
 from ExportForm import ExportForm
 from utils.filter_info import FilterInfo
 from utils.config import AddressConfig, PSDEnum, ChannelEnum, ThemeColorConfig
-from utils.eeg import get_montage
+from utils.edf import EdfUtil
 from utils.eeg_browser_extend import EEGBrowserManager
 from utils.custom_widgets import QWidgetDock, SaveDock
 from utils.diary import Diary
@@ -26,6 +26,9 @@ from qdarkstyle import load_stylesheet_pyqt5, load_stylesheet, LightPalette
 from qfluentwidgets import toggleTheme
 from qfluentwidgets.components.dialog_box.color_dialog import ColorDialog
 from ui.main_form_cur import Ui_Form
+from os import path
+import sys
+
 
 use('Qt5Agg')
 set_config('MNE_BROWSER_BACKEND', 'matplotlib')
@@ -33,7 +36,9 @@ rcParams['font.sans-serif'] = ['Microsoft YaHei']
 rcParams['axes.unicode_minus'] = False
 filterwarnings("ignore", category=UserWarning,
                message="Starting a Matplotlib GUI outside of the main thread will likely fail.")
-
+base_path = getattr(sys, '_MEIPASS', path.abspath('.'))
+vd_path = path.join(base_path, 'VD')
+sys.path.append(vd_path)
 
 # ui_main_form = uic.loadUiType('ui/main_form_cur.ui')[0]
 
@@ -347,7 +352,7 @@ class MainForm(QFrame, Ui_Form):
 
         fig, axes = subplots(1, 5)
         raw = self.raw.copy().pick(picks=list(intersection))
-        raw.set_montage(get_montage())
+        raw.set_montage(EdfUtil.get_montage())
 
         tpm_plot = None
         tpm_title = None
