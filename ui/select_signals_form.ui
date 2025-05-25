@@ -106,7 +106,7 @@
             </font>
            </property>
            <property name="text">
-            <string>19 channels (AD, SpiD, SRD)</string>
+            <string>19 channels (AD, SpiD)</string>
            </property>
           </widget>
          </item>

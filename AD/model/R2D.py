@@ -1,8 +1,6 @@
 from torch.nn import Module, BatchNorm1d, Conv1d, MaxPool1d, AdaptiveAvgPool1d, Linear, ReLU, Sequential
 from torch.nn.functional import relu
 
-# from torchsummary import summary
-
 Conv = Conv1d
 BN = BatchNorm1d
 
@@ -75,7 +73,6 @@ class ResNet(Module):
 
 def resnet34(**kwargs):
     return ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
-
 
 # if __name__ == '__main__':
 #     input = rand(8, 10, 1000)

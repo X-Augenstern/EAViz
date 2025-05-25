@@ -1,7 +1,7 @@
-#path
-npzdata="./SD/npz"       #Premodel函数中
-weightdata="./SD/save_48.pth"        #Config函数中
-tempdata='./SD/liangC3_ave.fif'      #finna3函数中
+# path
+npzdata = "./SD/npz"  # Premodel函数中
+weightdata = "./SD/save_48.pth"  # Config函数中
+tempdata = './SD/liangC3_ave.fif'  # finna3函数中
 
 # model
 
@@ -26,8 +26,8 @@ logs = True
 IoU = 0.2  # evaluate 时改变
 
 assert channel_number in ['Single', 'Multi']
-p_ch_dict = {'谌嘉诚': 12, '方铭泽': 13, '孙弘浩': 13, '徐子宜': 4, '叶梦琪': 7, '易可欣': 12, '陈羽文': 12,
-             '陈修泽': 12, '吴配瑶': 12}  # ？？这个棘波检测对应的选择通道的不同吗？？选择的通道分别是12，13，13，4，......
+# p_ch_dict = {'谌嘉诚': 12, '方铭泽': 13, '孙弘浩': 13, '徐子宜': 4, '叶梦琪': 7, '易可欣': 12, '陈羽文': 12,
+#              '陈修泽': 12, '吴配瑶': 12}  # ？？这个棘波检测对应的选择通道的不同吗？？选择的通道分别是12，13，13，4，......
 
 # 测试使用 选取模型已保存的权重---------------------------------------
 
@@ -54,22 +54,22 @@ elif model2 == 'SpikeRegressor':
     testweight2 = 'save_100.pth'
 
 # train parameter---------------------------
-patience = 25
-Kfold = 1
-epoch = 500
-wd = 1e-4
-momentum = 0.9
-lr_decay_rate = 0.1
+# patience = 25
+# Kfold = 1
+# epoch = 500
+# wd = 1e-4
+# momentum = 0.9
+# lr_decay_rate = 0.1
 
 # 存储选项----------------------------------------------------------------------
-name = model + '_' + channelMethod
-save_root = './result_19channels_MCAQN_0.6_' + name  # +'_softmax'
-savelog = 'logs'
-saveweight = 'weights'
-savePerformancePath = ''
+# name = model + '_' + channelMethod
+# save_root = './result_19channels_MCAQN_0.6_' + name  # +'_softmax'
+# savelog = 'logs'
+# saveweight = 'weights'
+# savePerformancePath = ''
 # data-------------------------------------------------------------------------
-channel_name = ['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 'F7', 'F8', 'T3', 'T4', 'T5', 'T6', 'Fz',
-                'Cz', 'Pz']
+# channel_name = ['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 'F7', 'F8', 'T3', 'T4', 'T5', 'T6', 'Fz',
+#                 'Cz', 'Pz']
 
 # 对于19个通道，每个通道的均值和方差
 mean = [0.0011932824351784102, 0.0011390994131762048, 0.002174121577085201, 0.002013172372939422,
@@ -92,14 +92,14 @@ std = [31.649422589030447, 33.41086614793433, 31.072790936903637, 30.32582046892
 # train_txt = 'datasplit/train_19channel.txt'
 # val_txt = 'datasplit/val_19channel.txt'
 # test_txt = 'datasplit/test_19channel.txt'
-train_txt = "E:\\SWINET\\datasplit\\train_19channel_test.txt"
-val_txt = "E:\\SWINET\\datasplit\\val_19channel_test.txt"
-test_txt = "E:\\SWINET\\datasplit\\test_19channel_test.txt"
+# train_txt = "E:\\SWINET\\datasplit\\train_19channel_test.txt"
+# val_txt = "E:\\SWINET\\datasplit\\val_19channel_test.txt"
+# test_txt = "E:\\SWINET\\datasplit\\test_19channel_test.txt"
 
 # test parameter
-max_det = 30  # detection 每一个样本内认为最大的棘慢波发放数目是30
-score_threshold = 0.25
-iou_threshold = 0.015
+# max_det = 30  # detection 每一个样本内认为最大的棘慢波发放数目是30
+# score_threshold = 0.25
+# iou_threshold = 0.015
 
 # if __name__ == '__main__':
 #     print(train_txt)

@@ -48,7 +48,6 @@ class ModelConfig:
                    'time span: >=0.3s(Template) | multiple of 30s(Semantics)'
     HFO_model_des = 'This model requires the <INPUT> .EDF FILE:\n' \
                     'sfreq: 1000Hz\n' \
-                    '19 channels, which can be selected in Select Signals Form per button AD/SD (19 channels)\n' \
                     'preprocessing: None\n' \
                     'time span: >=1s'
     VD_model_des = 'This model requires the <INPUT> .MP4 FILE:\n' \
@@ -84,7 +83,7 @@ class ChannelEnum(Enum):
 
 class PSDEnum(Enum):
     COLORS = list(TABLEAU_COLORS.values())  # 获取颜色列表
-
+    FREQ_LABELS = ["Delta", "Theta", "Alpha", "Beta", "Gamma"]
     FREQ_BANDS = [(0, 4), (4, 8), (8, 12), (12, 30), (30, 45)]
 
 
@@ -106,6 +105,14 @@ class MontageEnum(Enum):
             -0.00331545218673759, -0.00331545218673759, 0.0475, -0.00331545218673759, 0.0659925451936047,
             -0.00331545218673759, 0.0475, -0.00331545218673759,
             -0.00331545218673759, 0.0659925451936047, 0.095]
+
+    BRAIN_REGIONS = {
+        "中央区": ["C3", "C4", "Cz"],
+        "枕区": ["T5", "T6", "O1", "O2"],
+        "顶区": ["P3", "P4", "Pz"],
+        "颞区": ["F7", "F8", "T3", "T4"],
+        "额区": ["Fp1", "Fp2", "F3", "F4", "Fz"]
+    }
 
 
 class ThemeColorConfig:

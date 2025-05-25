@@ -40,6 +40,9 @@ def plot_seid_res(data1, data2, res_signal):
 
 
 def _plot_probs(data, class_labels, v_idx=None):
+    text_size = 20
+    font_family = "Microsoft YaHei"
+
     all_probs = array([])
     colors = colormaps['tab10'](range(len(class_labels)))
 
@@ -50,7 +53,7 @@ def _plot_probs(data, class_labels, v_idx=None):
     result = [("%.2f" % i) for i in all_probs * 100]
     for a, b in zip(class_labels, float32(result)):
         # x:a y:b+2 text:b
-        text(a, b + 2, b, ha='center', va='bottom', fontproperties="Arial", fontsize=10, fontweight='bold')
+        text(a, b + 2, b, ha='center', va='bottom', fontproperties="Arial", fontsize=text_size, fontweight='bold')
 
     # 设置分隔线
     if v_idx is not None:
@@ -58,8 +61,8 @@ def _plot_probs(data, class_labels, v_idx=None):
         mid = (xticks_positions[v_idx] + xticks_positions[v_idx + 1]) / 2
         axvline(mid, color='grey', linestyle='--', linewidth=2)
 
-    ylabel('Probability(%)', fontproperties="Microsoft YaHei", fontsize=12, fontweight='bold')
+    ylabel('Probability(%)', fontproperties=font_family, fontsize=text_size, fontweight='bold')
     # plt.title('概率分布图', fontproperties="Microsoft YaHei", loc='left', fontsize=12, fontweight='bold')
-    xticks(fontproperties="Arial", fontsize=11, fontweight='bold')
-    yticks(fontproperties="Arial", fontsize=12, fontweight='bold')
+    xticks(fontproperties=font_family, fontsize=text_size, fontweight='bold', rotation=20)
+    yticks(fontproperties=font_family, fontsize=text_size, fontweight='bold')
     ylim([0, 100])

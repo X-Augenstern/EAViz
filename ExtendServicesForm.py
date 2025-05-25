@@ -8,7 +8,7 @@ from collections import Counter
 from utils.threads import (StatisticsThread, SeiDESAThread, ADThread, SDTemplateThread, SDSemanticsThread, HFOThread,
                            VDThread, VDModelThread)
 from utils.custom_widgets import HoverLabel, MultiFuncEdit, SaveLabel
-from utils.config import ChannelEnum,ThemeColorConfig
+from utils.config import ChannelEnum, ThemeColorConfig
 from cv2 import resize, cvtColor, COLOR_BGR2RGB
 from torch import from_numpy
 from AD.APSD import APSD
@@ -160,8 +160,7 @@ class ExtendServicesForm(QWidget, Ui_Form):
         """
         加载模型进列表
         """
-        for model in model_list:
-            self.model_cbx.addItem(model)
+        self.model_cbx.addItems(model_list)
 
     def load_model(self, model_name):
         """

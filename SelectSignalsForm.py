@@ -2,7 +2,6 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QWidget, QMessageBox
 # from utils.config import AddressConfig
 # from subprocess import Popen
-from mne import io
 from utils.config import ChannelEnum
 from utils.edf import EdfUtil
 

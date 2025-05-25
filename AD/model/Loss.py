@@ -1,26 +1,6 @@
 from torch.nn import MultiLabelSoftMarginLoss
 
 
-# class classLoss1:
-#     def __init__(self):
-#         self.loss = BCEWithLogitsLoss(weight=None, reduction='mean', pos_weight=None)
-#
-#     def __call__(self, pred, label):
-#         BCEloss = self.loss(pred, label)
-#         loss_dict = dict(BCELoss=BCEloss, Total_Loss=BCEloss)
-#         return loss_dict
-#
-#
-# class classLoss2:
-#     def __init__(self):
-#         self.loss = MultiLabelMarginLoss(reduction='mean')
-#
-#     def __call__(self, pred, label):
-#         MuLLoss = self.loss(pred, label.long())
-#         loss_dict = dict(MuLloss=MuLLoss, Total_Loss=MuLLoss)
-#         return loss_dict
-
-
 class classLoss:
     def __init__(self):
         self.loss = MultiLabelSoftMarginLoss(weight=None, reduction='mean')

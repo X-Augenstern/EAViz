@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QThread, pyqtSignal
 from io import BytesIO
-from utils.config import AddressConfig, PSDEnum, ThemeColorConfig
+from utils.config import AddressConfig, ThemeColorConfig
 from numpy import mean, std, var, ndarray, array, corrcoef
 from torch import device, tensor, load, from_numpy
 from cv2 import CAP_PROP_FRAME_COUNT, resize, VideoWriter
@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from os import path, makedirs
 from mne import Annotations, read_evokeds
 from mne.io.edf.edf import RawEDF
+from utils.edf import EdfUtil
 from shutil import rmtree
 from ESA.A3D_model import R3DClassifier
 from ESA.offline_process import get_stft_feature, plot_feature, plot_feature_map
@@ -55,14 +56,14 @@ class StatisticsThread(QThread):
             span_end_index = int(self.stop_time * self.freq) - ms
             raw_data = self.raw.get_data(start=span_start_index, stop=span_end_index)
             statistics_1 = self.calculate_from_raw(raw_data, self.ch_idx)
-            power = self.raw.compute_psd(tmin=self.start_time, tmax=self.stop_time)
-            statistics_2 = self.calculate_from_psd(power, self.ch_idx)
+            spectrum = self.raw.compute_psd(tmin=self.start_time, tmax=self.stop_time)
+            statistics_2 = EdfUtil.calculate_single_channel_avg_psd(spectrum, self.ch_idx)
             self.res_signal.emit(self.group_idx, 'r', [statistics_1, statistics_2])
 
         if self.g_or_r == 'g':
             statistics_1 = self.calculate_from_raw(self.raw.get_data(), self.ch_idx)
-            power = self.raw.compute_psd()
-            statistics_2 = self.calculate_from_psd(power, self.ch_idx)
+            spectrum = self.raw.compute_psd()
+            statistics_2 = EdfUtil.calculate_single_channel_avg_psd(spectrum, self.ch_idx)
             self.res_signal.emit(self.group_idx, 'g', [statistics_1, statistics_2])
 
     @staticmethod
@@ -77,17 +78,6 @@ class StatisticsThread(QThread):
         res.append("%.2f" % std(ch_data_uv))  # std
         res.append("%.2f" % var(ch_data_uv))  # var
         return res
-
-    @staticmethod
-    def calculate_from_psd(raw_psd, index):
-        """
-        计算指定通道平均功率谱密度（表示在每个频带中电压波动的平方均值，分布在每赫兹的频率上。）
-        """
-        mean_power = []
-        for freq_band in PSDEnum.FREQ_BANDS.value:
-            mean_power_uv2 = raw_psd.get_data(fmin=freq_band[0], fmax=freq_band[1])[index].mean() * (10 ** 6) ** 2
-            mean_power.append("{:.2e}".format(mean_power_uv2))
-        return mean_power
 
     def run(self):
         self.calculate_statistics()
@@ -314,6 +304,8 @@ class SDBaseThread(QThread):
         pass
 
     def plot_eeg_and_save(self, raw, dur_th, scaling):
+        text_size = 16
+        font_family = "Microsoft YaHei"
         if raw.annotations:
             if self.duration >= dur_th:
                 eeg_plot = raw.plot(duration=self.duration, show=False, scalings=scaling, start=self.start_time,
@@ -321,7 +313,7 @@ class SDBaseThread(QThread):
                 raw.annotations.rename(mapping={'': 'SSW'})
                 # Add SSW
                 fig = eeg_plot.get_figure()
-                fig.text(0.5, 1, 'SSW', ha='center', va='top', fontsize=11, fontweight='bold', color='#1f77b4')
+                fig.suptitle('SSW', fontsize=text_size, fontweight='bold', color='#1f77b4', y=0.98)
             else:
                 raw.annotations.rename(mapping={'': 'SSW'})
                 eeg_plot = raw.plot(duration=self.duration, show=False, scalings=scaling, start=self.start_time,
@@ -329,22 +321,22 @@ class SDBaseThread(QThread):
             # Add legend
             event_label = "SSW: Spike-slow wave"
             # 获取了绘图的第一个轴（Axes）对象并设置图例
-            eeg_plot.get_axes()[0].legend([event_label], loc='lower center', bbox_to_anchor=(0.46, -0.12),
-                                          frameon=False, prop={'family': 'Arial', 'size': 12})
+            eeg_plot.get_axes()[0].legend([event_label], loc='lower center', bbox_to_anchor=(0.44, -0.18),
+                                          frameon=False, prop={'family': font_family, 'size': text_size})
         else:
             eeg_plot = raw.plot(duration=self.duration, show=False, scalings=scaling, start=self.start_time,
                                 show_scrollbars=False)
 
         # 获取第一个轴对象，通常包含图表的标题和注释
         ax = eeg_plot.mne.ax_main
-        # 修改纵轴刻度字体属性
-        for label in ax.yaxis.get_ticklabels():
-            label.set_color(ThemeColorConfig.get_txt_color())  # 字体颜色
-            label.set_fontsize(11)  # 字体大小
+        # 设置横轴label字体
+        ax.set_xlabel(ax.get_xlabel(), fontproperties=font_family, fontsize=text_size)
+        # 统一设置坐标轴刻度字体大小和颜色
+        ax.tick_params(axis='both', which='major', labelsize=text_size, labelcolor=ThemeColorConfig.get_txt_color())
         # 遍历这个轴上的所有文本对象，设置字体
         for text in ax.texts:
             text.set_weight('bold')
-            text.set_fontsize(11)
+            text.set_fontsize(text_size)
 
         # Save the figure
         buffer = self._save_fig_2_buffer(eeg_plot)

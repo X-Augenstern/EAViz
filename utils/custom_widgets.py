@@ -4,7 +4,7 @@ from platform import system
 from subprocess import Popen, run
 from PyQt5.QtWidgets import QWidget, QLabel, QApplication, QSizePolicy, QLineEdit, QFileDialog, QPushButton, \
     QVBoxLayout, QScrollArea
-from PyQt5.QtGui import QPixmap, QCursor, QIcon
+from PyQt5.QtGui import QPixmap, QCursor, QIcon, QFont
 from PyQt5.QtCore import Qt, QTimer, QSize
 from pyqtgraph.dockarea import Dock
 from utils.config import AddressConfig, ThemeColorConfig
@@ -297,6 +297,9 @@ class MultiFuncEdit(QLineEdit):
 
     def __init__(self, parent=None, mode=1, func=0):
         super(MultiFuncEdit, self).__init__(parent)
+        font = QFont("Microsoft YaHei", 11, QFont.Bold)
+        self.setFont(font)
+
         if func == 0:  # 0 将被解释为假，而所有其他数字（无论是正数、负数还是非零浮点数）都将被解释为真。
             self.setPlaceholderText("— Click to Input —")
         self.func = func
@@ -509,7 +512,8 @@ class SaveDock(Dock):
         if self.fig_title:
             dock_height = self.size().height()
             screen_height = QApplication.desktop().screenGeometry().height()
-            y = max(min((-0.333 * (dock_height / screen_height) + 1), 0.9), 0.7)
+            y = 0.97 - 0.12 * (dock_height / screen_height)
+            y = min(max(y, 0.80), 0.97)  # y 一般落在 0.85 ~ 0.94 之间
             self.canvas.figure.suptitle(self.fig_title, fontsize=20, y=y)
 
         super(SaveDock, self).resizeEvent(event)

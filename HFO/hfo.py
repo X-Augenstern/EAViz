@@ -100,6 +100,9 @@ def yAxisTickFormatter(values, scale, spacing):
 
 
 def show_plot(merged_raw, start_time):
+    text_size = 12
+    font_family = "Microsoft YaHei"
+    text_size_str = str(text_size) + 'pt'
     colors = ThemeColorConfig.get_srd_theme()
 
     raw_low = merged_raw.copy().filter(l_freq=1, h_freq=70)
@@ -120,11 +123,12 @@ def show_plot(merged_raw, start_time):
     # 创建三个绘图区域
     layout.setContentsMargins(10, 10, 10, 10)
     p1 = layout.addPlot(row=0, col=0)
-    p1.setTitle(f"<span style='color: {colors['title_color']}; font-weight: bold; font-size: 12pt;'>raw</span>")
     p2 = layout.addPlot(row=1, col=0)
-    p2.setTitle(f"<span style='color: {colors['title_color']}; font-weight: bold; font-size: 12pt;'>1-70Hz</span>")
     p3 = layout.addPlot(row=2, col=0)
-    p3.setTitle(f"<span style='color: {colors['title_color']}; font-weight: bold; font-size: 12pt;'>80-450Hz</span>")
+    for plot, title in zip([p1, p2, p3], ['raw', '1-70Hz', '80-450Hz']):
+        plot.setTitle(
+            f"<span style='color: {colors['title_color']};font-family: {font_family};"
+            f" font-weight: bold; font-size: {text_size_str};'>{title}</span>")
     p1.setXLink(p2)  # 链接两个图的x轴
     p2.setXLink(p3)
 
@@ -132,8 +136,8 @@ def show_plot(merged_raw, start_time):
     axis_pen = mkPen(color=colors["axis_color"], width=2)  # Black color for axis and ticks
 
     # Set axis labels and disable SI prefix
-    label_style = {'font-size': '12pt', 'color': colors["axis_color"]}
-    tick_font = QtGui.QFont('Arial', 11)
+    label_style = {'font-size': text_size_str, 'color': colors["axis_color"], 'font-family': font_family}
+    font = QtGui.QFont(font_family, text_size - 2)
 
     for plot in [p1, p2, p3]:
         plot.getAxis('left').setPen(axis_pen)
@@ -146,10 +150,10 @@ def show_plot(merged_raw, start_time):
         # Apply custom tick formatter to y-axis
         plot.getAxis('left').tickStrings = yAxisTickFormatter
         # Set axis labels and custom tick formatter
-        plot.getAxis('left').setStyle(tickFont=tick_font, tickTextOffset=8)
-        plot.getAxis('bottom').setStyle(tickFont=tick_font)
-        plot.getAxis('left').setLabel('Amplitude (μV)', **label_style)
-        plot.getAxis('bottom').setLabel('Time', units='s', **label_style)
+        plot.getAxis('left').setStyle(tickFont=font, tickTextOffset=6)
+        plot.getAxis('bottom').setStyle(tickFont=font)
+        plot.getAxis('left').setLabel('Amplitude(μV)', **label_style)
+        plot.getAxis('bottom').setLabel('Time(s)', **label_style)
         plot.getAxis('left').enableAutoSIPrefix(False)
 
     # Plot
@@ -180,9 +184,7 @@ def show_plot(merged_raw, start_time):
         # Add text at the onset time
         text_p2 = TextItem('Spike', anchor=(0.5, 1), color=colors["annotation_color"])
         text_p3 = TextItem(description, anchor=(0.5, 1), color=colors["annotation_color"])
-        font = QtGui.QFont()  # 设置字体
         font.setBold(True)
-        font.setPointSize(14)  # Set the font size
         text_p2.setFont(font)
         text_p3.setFont(font)
         text_p2.setPos(onset + duration / 2, np_max(data1[0]))  # Set the position of the text
@@ -201,10 +203,4 @@ def show_plot(merged_raw, start_time):
         p2.addItem(region_p2)
         p3.addItem(region_p3)
 
-    # view.show()  # <test>
-    # pg.exec()  # <test>
-
     return view
-
-# if __name__ == '__main__':
-#     hfo_process(mne.io.read_raw("../test_data/HFO/管若彤_filtered.edf", preload=True), 11, 5, 10)

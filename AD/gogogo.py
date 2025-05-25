@@ -250,23 +250,26 @@ def Art_Dec(Hdl_Var, arti_list, raw, st, mod1, mod2, res_signal, auto=False):
     raw.set_annotations(merged_annotations)
 
     # Plot
+    text_size = 16
+    font_family = "Microsoft YaHei"
+
     eeg_plot = plot_raw(raw, duration=11, scalings=300e-6, show=False, show_scrollbars=False, start=st)
     # bgcolor = rcParams['axes.facecolor']
     # 获取第一个轴对象，通常包含图表的标题和注释
     ax = eeg_plot.mne.ax_main
-    # 修改纵轴刻度字体属性
-    for label in ax.yaxis.get_ticklabels():
-        label.set_color(ThemeColorConfig.get_txt_color())  # 字体颜色
-        label.set_fontsize(11)  # 字体大小
+    # 设置横轴label字体
+    ax.set_xlabel(ax.get_xlabel(), fontproperties=font_family, fontsize=text_size)
+    # 统一设置坐标轴刻度字体大小和颜色
+    ax.tick_params(axis='both', which='major', labelsize=text_size, labelcolor=ThemeColorConfig.get_txt_color())
     # 遍历这个轴上的所有文本对象，设置字体
     for text in ax.texts:
         text.set_weight('bold')
-        text.set_fontsize(11)
+        text.set_fontsize(text_size)
     # Add legend
     event_label = 'EB: Eye Blinking, FE: Frontal EMG, CE: Chew EMG, TE: Temporal EMG'
     # 获取了绘图的第一个轴（Axes）对象并设置图例
-    eeg_plot.get_axes()[0].legend([event_label], loc='lower center', bbox_to_anchor=(0.35, -0.12), frameon=False,
-                                  prop={'family': 'Arial', 'size': 12})
+    eeg_plot.get_axes()[0].legend([event_label], loc='lower center', bbox_to_anchor=(0.44, -0.18), frameon=False,
+                                  prop={'family': font_family, 'size': 15})
 
     # Save the figure
     eeg_plot.tight_layout()

@@ -1,7 +1,7 @@
 from numpy import arange
 from mpl_toolkits.mplot3d import Axes3D  # noqa
 from mne import create_info, EvokedArray
-from matplotlib.pyplot import savefig, close
+from matplotlib.pyplot import savefig, close, gcf
 from io import BytesIO
 from utils.config import PSDEnum, ChannelEnum
 from utils.edf import EdfUtil
@@ -24,7 +24,20 @@ def APSD(data, tmin, tmax, fb_idx, topo_signal=None):  # size
     else:
         times = arange(tmin, tmax)  # size
     evoked.set_montage(EdfUtil.get_montage())
+
+    text_size = 16
+
     tpm = evoked.plot_topomap(times, ch_type="eeg", show=False, nrows=3, ncols=4)
+    fig = tpm if hasattr(tpm, 'axes') else gcf()
+
+    # 放大子图标题及 color_bar 刻度
+    for ax in fig.axes:
+        if ax.get_title():
+            ax.set_title(ax.get_title(), fontsize=text_size)
+
+    # 放大 colorbar
+    cbar_ax = fig.axes[-1]  # 通常最后一个axes是colorbar
+    cbar_ax.tick_params(labelsize=text_size)
 
     buffer = BytesIO()
     savefig(buffer, format='png', dpi=300)

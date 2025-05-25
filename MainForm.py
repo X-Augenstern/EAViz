@@ -25,10 +25,12 @@ from warnings import filterwarnings
 from qdarkstyle import load_stylesheet_pyqt5, load_stylesheet, LightPalette
 from qfluentwidgets import toggleTheme
 from qfluentwidgets.components.dialog_box.color_dialog import ColorDialog
+# from ui.main_form_cur_medicine import Ui_Form
 from ui.main_form_cur import Ui_Form
 from os import path
 import sys
 
+# from MedicationEvaluationFrom import MedicationEvaluationFrom
 
 use('Qt5Agg')
 set_config('MNE_BROWSER_BACKEND', 'matplotlib')
@@ -39,6 +41,7 @@ filterwarnings("ignore", category=UserWarning,
 base_path = getattr(sys, '_MEIPASS', path.abspath('.'))
 vd_path = path.join(base_path, 'VD')
 sys.path.append(vd_path)
+
 
 # ui_main_form = uic.loadUiType('ui/main_form_cur.ui')[0]
 
@@ -67,10 +70,12 @@ class MainForm(QFrame, Ui_Form):
         self.select_time_span_for_tpm = None
         self.export_form = None
         self.t_max = None  # 最后一次sample的开始时间
+        # self.groupbox_list = [self.groupBox_1, self.groupBox_2, self.groupBox_3, self.groupBox_4, self.groupBox_5, self.groupBox_6]
         self.groupbox_list = [self.groupBox_1, self.groupBox_2, self.groupBox_3, self.groupBox_4, self.groupBox_5]
         self.color_dialog = None
         self.ebm = EEGBrowserManager(self)
         self.setStyleSheet(ThemeColorConfig.get_ui_ss())
+        # self.me = None  # todo delete
         self.init_ui()
 
     def init_ui(self):
@@ -106,6 +111,8 @@ class MainForm(QFrame, Ui_Form):
         self.start_time.valueChanged.connect(self.autoset_end)
         self.save_txt_btn.clicked.connect(self.save_ann)
         self.clear_btn.clicked.connect(self.clear_ann)
+        # todo delete
+        # self.me_btn.clicked.connect(self.show_me)
 
     def load_signals(self):
         """
@@ -114,10 +121,9 @@ class MainForm(QFrame, Ui_Form):
         adr, _ = QFileDialog.getOpenFileName(self, 'Open File', '.', '*.edf')
         if adr is None or len(adr) == 0:
             return
-        else:
-            self.select_signal_form = SelectSignalsForm(self, adr)
-            self.select_signal_form.show()
-            self.diary.debug('MainForm —> SelectSignalsForm')
+        self.select_signal_form = SelectSignalsForm(self, adr)
+        self.select_signal_form.show()
+        self.diary.debug('MainForm —> SelectSignalsForm')
 
     def ini_before_load(self):
         """
@@ -284,6 +290,7 @@ class MainForm(QFrame, Ui_Form):
         """
         绘制PSD
         """
+        text_size = 12
         num_plots = len(para_list[0])
         fig, axs = subplots(num_plots, 1, figsize=(10, num_plots * 2.5))  # 创建多个子图，固定Figure高度(宽,高 inch)
         # <FAILED>'Axes' object is not subscriptable
@@ -293,7 +300,10 @@ class MainForm(QFrame, Ui_Form):
             color = PSDEnum.COLORS.value[i % len(PSDEnum.COLORS.value)]
             self.raw.compute_psd(fmin=para_list[1], fmax=para_list[2], picks=ch_name).plot(
                 axes=axs[i], color=color, spatial_colors=False, dB=True, amplitude=False, show=False)
-            axs[i].set_title(f'PSD for {ch_name}')
+            axs[i].set_title(f'PSD for {ch_name}', fontsize=text_size)
+            axs[i].set_ylabel(axs[i].get_ylabel(), fontsize=text_size)
+            axs[i].set_xlabel('Frequency(Hz)', fontsize=text_size)
+            axs[i].tick_params(axis='both', labelsize=text_size)
             for line in axs[i].lines:  # 遍历该轴中的所有线条
                 line.set_path_effects([
                     Stroke(linewidth=2, foreground="gold", alpha=0.3),  # 外层光晕
@@ -366,8 +376,6 @@ class MainForm(QFrame, Ui_Form):
                 tpm_plot = FigureCanvas(
                     raw.compute_psd(fmin=0, fmax=45, tmin=span_list[0], tmax=span_list[1], picks='all').plot_topomap(
                         dB=True, ch_type='eeg', show=False, show_names=True, axes=axes))  # vlim='joint' 共用一个colorbar
-                # for ax in axes:
-                #     ax.set_title(ax.get_title(), fontsize=14, y=1.1)  # 设置每个子图的标题、字体大小、高度
                 tpm_title = f'{span_list[0]}-{span_list[1]}s'
             else:
                 # tpm_plot = FigureCanvas(
@@ -378,11 +386,25 @@ class MainForm(QFrame, Ui_Form):
                     raw.compute_psd(fmin=0, fmax=45, picks='all').plot_topomap(
                         dB=True, ch_type='eeg', show=False, show_names=True, axes=axes))
                 tpm_title = f'{raw.times.min()}-{raw.times.max()}s'
-            tight_layout()
-            fig.subplots_adjust(left=0.01, right=0.95, top=0.9, bottom=0.05, wspace=0.2, hspace=0.2)
+
+            text_size = 12
+            fig = axes[0].figure
+            for ax in axes:  # 遍历主图（topomap）每个 subplot 的 axes，设置标题
+                ax.set_title(ax.get_title(), fontsize=text_size, y=1.1)
+                for text in ax.texts:
+                    text.set_fontsize(text_size)  # 设置通道字体大小
+            for ax in fig.axes:  # 遍历整个 figure 里所有的 axes（包括 colorbar 的 axes）
+                if ax.get_ylabel():
+                    ax.tick_params(labelsize=text_size)  # 设置 colorbar 刻度字体大小
+                    label = ax.yaxis.get_label()
+                    label.set_fontsize(text_size)  # 设置 colorbar 单位字体大小
+                    label.set_verticalalignment('center')  # 假设 colorbar 是竖着的，这个设置会让 label 相对于色条居中，不会因为字号或旋转等原因偏上或偏下
+                    ax.yaxis.labelpad = -15  # 设置 colorbar 与单位之间距离
+
+            fig.subplots_adjust(left=0.01, right=0.95, top=0.9, bottom=0.05, wspace=0.1, hspace=0.2)
         except Exception as e:
             self.diary.error('<FAILED>' + str(e))
-            QMessageBox.warning(self, 'Warning', 'The count of valid channels should be more than 2!')
+            QMessageBox.warning(self, 'Warning', str(e))
 
         if tpm_plot is not None:
             if self.tpm_dock is not None:
@@ -647,6 +669,11 @@ class MainForm(QFrame, Ui_Form):
             event.accept()
         else:
             event.ignore()
+
+    # todo delete
+    # def show_me(self):
+    #     self.me = MedicationEvaluationFrom()
+    #     self.me.show()
 
 
 def set_global_mode(app):
