@@ -1,7 +1,7 @@
 # path
-npzdata = "./SD/npz"  # Premodel函数中
-weightdata = "./SD/save_48.pth"  # Config函数中
-tempdata = './SD/liangC3_ave.fif'  # finna3函数中
+npzdata = "./SpiD/npz"  # Premodel函数中
+weightdata = "./SpiD/save_48.pth"  # Config函数中
+tempdata = './SpiD/liangC3_ave.fif'  # finna3函数中
 
 # model
 

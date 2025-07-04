@@ -1,3 +1,27 @@
+# SpiD temp files ** 表示匹配任意数量的目录层级，因此可以忽略任意路径中的 mat、npz 文件夹
+**/mat/
+**/npz/
+
+# test files
+/test_data
+/test.py
+
+# Checkpoint stuff
+# ESC_SD
+*.tar
+# AD VD SRD SpiD
+*.pth
+# VD
+*.pt
+
+/realtime/
+/MedicationEvaluationFrom.py
+/ui/main_form_cur_medicine.py
+/ui/main_form_cur_medicine.ui
+/ui/medication_evaluation_from.ui
+/utils/annotation.py
+/utils/diary/
+
 # Ignore .idea folder
 .idea/
 
@@ -138,19 +162,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-
-# SpiD temp files ** 表示匹配任意数量的目录层级，因此可以忽略任意路径中的 mat、npz 文件夹
-**/mat/
-**/npz/
-
-# test files
-/test_data
-/test.py
-
-# Checkpoint stuff
-# ESC+SD
-*.tar
-# AD VD HFO SpiD
-*.pth
-# VD
-*.pt

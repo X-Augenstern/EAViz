@@ -1,5 +1,5 @@
 from torch.nn import Module, Sequential, Conv1d, BatchNorm1d, AdaptiveAvgPool1d, Linear, ReLU, Sigmoid
-from HFO.modules import psdWeight
+from SRD.modules import psdWeight
 
 
 def downSample(block, inplanes, planes, stride=1):

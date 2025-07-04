@@ -10,19 +10,19 @@ from mne import Annotations, read_evokeds
 from mne.io.edf.edf import RawEDF
 from utils.edf import EdfUtil
 from shutil import rmtree
-from ESA.A3D_model import R3DClassifier
-from ESA.offline_process import get_stft_feature, plot_feature, plot_feature_map
-from ESA.plot_result import plot_seid_res, plot_esa_res
-from SeiD.two_feature_model import Classifier1D_2D_3D
+from ESC_SD.ESC.A3D_model import R3DClassifier
+from ESC_SD.offline_process import get_stft_feature, plot_feature, plot_feature_map
+from ESC_SD.plot_result import plot_sd_res, plot_esc_res
+from ESC_SD.SD.two_feature_model import Classifier1D_2D_3D
 from AD.gogogo import Art_Dec
 from AD.APSD import APSD
 from AD import setdata
-import SD.Config as cfg
-from SD.finnal3 import get_label_data
-from SD.Premodel import getlabel
-from SD.edf2mat import edf2mat, filter_2sIIR, anno_txt
-from SD.mat2npz import mat2npz
-from HFO.hfo import hfo_process
+import SpiD.Config as cfg
+from SpiD.finnal3 import get_label_data
+from SpiD.Premodel import getlabel
+from SpiD.edf2mat import edf2mat, filter_2sIIR, anno_txt
+from SpiD.mat2npz import mat2npz
+from SRD.hfo import hfo_process
 from VD.api import Colors, annotating_box, actionRecognition, non_max_suppression, scale_coords
 from VD.config import Config
 from VD.Pre_videodata import LoadVideos
@@ -89,7 +89,7 @@ def crop_tactic(raw, start_time, dur):
     Presuming the largest sfreq reaches 1000Hz, crop the raw with margin (+-4s).
     (Notch Filter length: 6601 samples (6.601 s))
 
-    AD/SD requires to add resultant annotations to the raw, so this tactic seems not advisable.
+    AD/SpiD requires to add resultant annotations to the raw, so this tactic seems not advisable.
     """
     margin = 4
 
@@ -109,9 +109,9 @@ def crop_tactic(raw, start_time, dur):
     return raw, start_time - crop_start
 
 
-class SeiDESAThread(QThread):
+class ESCSDThread(QThread):
     """
-    SeiD/ESA 线程
+    ESC_SD 线程
     """
     fm_signal = pyqtSignal(bytes)
     feature_signal = pyqtSignal(bytes)
@@ -119,13 +119,13 @@ class SeiDESAThread(QThread):
     finish_signal = pyqtSignal()
 
     def __init__(self, raw, start_time, mod):
-        super(SeiDESAThread, self).__init__()
+        super(ESCSDThread, self).__init__()
         self.raw, self.pre_margin = crop_tactic(raw, start_time, 4)
         self.mod = mod
 
-    def seid(self):
+    def sd(self):
         model = Classifier1D_2D_3D(2, (2, 2, 2, 2), pretrained=True)
-        checkpoint = load(AddressConfig.get_seid_adr('cp'), map_location=lambda storage, loc: storage)
+        checkpoint = load(AddressConfig.get_sd_adr('cp'), map_location=lambda storage, loc: storage)
         model.load_state_dict(checkpoint['state_dict'])
         model.eval()
 
@@ -140,7 +140,7 @@ class SeiDESAThread(QThread):
         # print(pre_margin + 4 - 1 / raw.info['sfreq'])
 
         # tmp3
-        tmp3, power, data = get_stft_feature(raw, AddressConfig.get_seid_adr('STFT'))
+        tmp3, power, data = get_stft_feature(raw, AddressConfig.get_sd_adr('STFT'))
 
         # tmp1
         tmp1 = data.transpose((1, 0))
@@ -175,7 +175,7 @@ class SeiDESAThread(QThread):
         # print('resnet:', out1.shape)
         # print('resnet:', out2.shape)
         # result
-        plot_seid_res(out1, out2, self.res_signal)
+        plot_sd_res(out1, out2, self.res_signal)
 
         # p = sum(map(lambda p: p.numel(), model.parameters()))
         # print('parameters size:', p)
@@ -183,9 +183,9 @@ class SeiDESAThread(QThread):
         # net = model.to(device)
         # summary(net, input_size=[(4000, 21),(3, 21, 256,256),(3, 256, 256)])
 
-    def esa(self):
+    def esc(self):
         model = R3DClassifier(8, (2, 2, 2, 2), pretrained=True)
-        checkpoint = load(AddressConfig.get_esa_adr('cp'), map_location=lambda storage, loc: storage)
+        checkpoint = load(AddressConfig.get_esc_adr('cp'), map_location=lambda storage, loc: storage)
         model.load_state_dict(checkpoint['state_dict'])
         model.eval()
 
@@ -196,7 +196,7 @@ class SeiDESAThread(QThread):
         # 切片2
         raw = raw.crop(self.pre_margin, self.pre_margin + 4 - 1 / raw.info['sfreq'])
 
-        stft_buffer, power, _ = get_stft_feature(raw, AddressConfig.get_esa_adr('STFT'), save=False)
+        stft_buffer, power, _ = get_stft_feature(raw, AddressConfig.get_esc_adr('STFT'), save=False)
         out, feature_map = model(stft_buffer)
 
         # feature map
@@ -208,13 +208,13 @@ class SeiDESAThread(QThread):
         plot_feature(power[2], self.feature_signal)  # 只取索引为2用于绘图
 
         # result
-        plot_esa_res(out, self.res_signal)
+        plot_esc_res(out, self.res_signal)
 
     def run(self):
         if self.mod == 'DSMN-ESS':
-            self.seid()
+            self.sd()
         elif self.mod == 'R3DClassifier':
-            self.esa()
+            self.esc()
         self.finish_signal.emit()
 
 
@@ -282,9 +282,9 @@ class ADThread(QThread):
         self.finish_signal.emit()
 
 
-class SDBaseThread(QThread):
+class SpiDBaseThread(QThread):
     """
-    SD 线程基类
+    SpiD 线程基类
     """
     swi_signal = pyqtSignal(str)
     res_signal = pyqtSignal(bytes, RawEDF)
@@ -292,7 +292,7 @@ class SDBaseThread(QThread):
     finish_signal = pyqtSignal()
 
     def __init__(self, raw, start_time, stop_time, auto=False):
-        super(SDBaseThread, self).__init__()
+        super(SpiDBaseThread, self).__init__()
         self.raw = raw.set_eeg_reference(ref_channels='average')  # 平均导联
         self.start_time = start_time
         self.stop_time = stop_time
@@ -362,13 +362,13 @@ class SDBaseThread(QThread):
         self.finish_signal.emit()
 
 
-class SDTemplateThread(SDBaseThread):
+class SpiDTemplateThread(SpiDBaseThread):
     """
-    SD 模板匹配线程
+    SpiD 模板匹配线程
     """
 
     def __init__(self, raw, start_time, stop_time, auto=False):
-        super(SDTemplateThread, self).__init__(raw, start_time, stop_time, auto)
+        super(SpiDTemplateThread, self).__init__(raw, start_time, stop_time, auto)
 
     def sd(self):
         # 滤波
@@ -418,13 +418,13 @@ class SDTemplateThread(SDBaseThread):
         self.res_signal.emit(buffer.getvalue(), raw_filtered)
 
 
-class SDSemanticsThread(SDBaseThread):
+class SpiDSemanticsThread(SpiDBaseThread):
     """
-    SD 语义分割线程
+    SpiD 语义分割线程
     """
 
     def __init__(self, raw, start_time, stop_time, auto=False):
-        super(SDSemanticsThread, self).__init__(raw, start_time, stop_time, auto)
+        super(SpiDSemanticsThread, self).__init__(raw, start_time, stop_time, auto)
 
     def sd(self):
         # todo 50 Notch
@@ -445,8 +445,8 @@ class SDSemanticsThread(SDBaseThread):
         record1 = filter_2sIIR(record_microvolts, passband, samplerate, forder, 'bandpass')
 
         # folder process
-        mat_path = AddressConfig.get_sd_adr('mat')
-        npz_path = AddressConfig.get_sd_adr('npz')
+        mat_path = AddressConfig.get_spid_adr('mat')
+        npz_path = AddressConfig.get_spid_adr('npz')
         self.clean_folder_list([mat_path, npz_path])
         # 如果这个目录或其任何父目录不存在的话，创建一个名为 mat_path 的目录。
         # 如果这个目录已经存在，代码不会有任何错误，而是正常继续执行。这在确保创建目录时不因目录已存在而中断程序执行的情况下非常有用。
@@ -492,15 +492,15 @@ class SDSemanticsThread(SDBaseThread):
                 rmtree(p)
 
 
-class HFOThread(QThread):
+class SRDThread(QThread):
     """
-    HFO 线程
+    SRD 线程
     """
     res_signal = pyqtSignal(RawEDF)
     finish_signal = pyqtSignal()
 
     def __init__(self, raw, ch_idx, start_time, stop_time):
-        super(HFOThread, self).__init__()
+        super(SRDThread, self).__init__()
         self.raw = raw
         self.ch_idx = ch_idx
         self.start_time = start_time

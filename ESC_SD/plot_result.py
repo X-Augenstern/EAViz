@@ -6,7 +6,7 @@ from io import BytesIO
 from utils.config import ThemeColorConfig
 
 
-def plot_esa_res(data, res_signal):
+def plot_esc_res(data, res_signal):
     # 1
     # class_label = ['BECT', 'CAE', 'CSWS', 'EIEE', 'FS', 'Normal', 'WEST']
     # 19
@@ -25,7 +25,7 @@ def plot_esa_res(data, res_signal):
     close()
 
 
-def plot_seid_res(data1, data2, res_signal):
+def plot_sd_res(data1, data2, res_signal):
     class_label = ['EIEE', 'WEST', 'CAE', 'FS+', 'BECT', 'CSWS', 'interictal', 'seizure']
     fig, ax = subplots(figsize=(8, 6))
     ax.set_facecolor(ThemeColorConfig.get_eai_bg())  # 坐标区域背景

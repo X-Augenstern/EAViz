@@ -1,9 +1,9 @@
 from torch import device, cuda, roll, cat, zeros, float32, tensor
 from torch.nn import Module, Sequential, Conv1d, BatchNorm1d, GELU, MaxPool1d, Dropout
 from torch.nn.init import xavier_uniform_, zeros_, ones_
-from HFO.modules import getESDFeature, getDEFeature, getPsdFeature, getPsdValue
-from HFO.timFeature import downSample, SEBasicBlock, makeLayer
-from HFO.Attention0 import TransformerAEClassifier
+from SRD.modules import getESDFeature, getDEFeature, getPsdFeature, getPsdValue
+from SRD.timFeature import downSample, SEBasicBlock, makeLayer
+from SRD.Attention0 import TransformerAEClassifier
 from scipy.signal import butter, filtfilt
 
 device = device("cuda" if cuda.is_available() else "cpu")

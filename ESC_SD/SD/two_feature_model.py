@@ -2,7 +2,7 @@ from torch import zeros, cat
 from torch.autograd import Variable
 from torch.nn import Sequential, Module, LSTM, MaxPool3d, MaxPool2d, Conv2d, BatchNorm2d, ReLU, AdaptiveAvgPool3d, \
     Linear, Dropout, Softmax
-from SeiD.A3D_model import SpatioTemporalResLayer, SpatioTemporalResBlock, SpatioTemporalConv
+from ESC_SD.SD.A3D_model import SpatioTemporalResLayer, SpatioTemporalResBlock, SpatioTemporalConv
 
 
 class RNN(Module):

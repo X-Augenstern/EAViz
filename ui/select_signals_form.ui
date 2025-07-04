@@ -70,7 +70,7 @@
             </font>
            </property>
            <property name="text">
-            <string>21 channels (ESC+SD)</string>
+            <string>21 channels (ESC + SD)</string>
            </property>
            <property name="checkable">
             <bool>true</bool>

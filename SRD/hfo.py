@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QColor
 from torch import device, cuda, from_numpy, max, float32, no_grad, load
 from numpy import array, mean, std, max as np_max
-from HFO.Excellent import Celestial
+from SRD.Excellent import Celestial
 from utils.config import AddressConfig, ThemeColorConfig
 from mne import Annotations
 from pyqtgraph.Qt import QtGui, QtCore
@@ -21,7 +21,7 @@ def hfo_process(raw, ch_idx, start_time, end_time):
 def load_model():
     model = Celestial()
     # model_path = 'model_weights.pth'  <test>
-    model_path = AddressConfig.get_hfo_adr('cp')
+    model_path = AddressConfig.get_srd_adr('cp')
     model_weights = load(model_path, map_location=use_device)
     # 先把模型转移到正确的设备然后加载状态字典
     model.to(use_device).load_state_dict(model_weights)

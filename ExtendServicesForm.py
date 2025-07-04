@@ -5,14 +5,14 @@ from PyQt5.QtGui import QImage, QPixmap, QIcon, QColor
 from utils.config import IndexConfig, ModelConfig, AddressConfig
 from math import floor
 from collections import Counter
-from utils.threads import (StatisticsThread, SeiDESAThread, ADThread, SDTemplateThread, SDSemanticsThread, HFOThread,
+from utils.threads import (StatisticsThread, ESCSDThread, ADThread, SpiDTemplateThread, SpiDSemanticsThread, SRDThread,
                            VDThread, VDModelThread)
 from utils.custom_widgets import HoverLabel, MultiFuncEdit, SaveLabel
 from utils.config import ChannelEnum, ThemeColorConfig
 from cv2 import resize, cvtColor, COLOR_BGR2RGB
 from torch import from_numpy
 from AD.APSD import APSD
-from HFO.hfo import show_plot
+from SRD.hfo import show_plot
 from ui.extend_services_form_cur import Ui_Form
 
 
@@ -44,13 +44,13 @@ class ExtendServicesForm(QWidget, Ui_Form):
         # listWidget固定高度
         # self.listWidget.setFixedHeight(400)
 
-        # ESC+SD
-        self.seid_esa_fm = SaveLabel(self)
-        self.seid_esa_feature = SaveLabel(self)
-        self.seid_esa_res = SaveLabel(self)
-        self.fm_layout.addWidget(self.seid_esa_fm)
-        self.feature_layout.addWidget(self.seid_esa_feature)
-        self.res_layout.addWidget(self.seid_esa_res)
+        # ESC_SD
+        self.esc_sd_fm = SaveLabel(self)
+        self.esc_sd_feature = SaveLabel(self)
+        self.esc_sd_res = SaveLabel(self)
+        self.fm_layout.addWidget(self.esc_sd_fm)
+        self.feature_layout.addWidget(self.esc_sd_feature)
+        self.res_layout.addWidget(self.esc_sd_res)
         # AD
         self.ad_topo = SaveLabel(self)
         self.topo_layout.addWidget(self.ad_topo)
@@ -81,9 +81,9 @@ class ExtendServicesForm(QWidget, Ui_Form):
         self.is_syncing = False
         # 防止span1、span2互相影响
         self.is_updating = False
-        # ESC+SD
-        self.seid_esa_mod = None
-        self.seid_esa_thread = None
+        # ESC_SD
+        self.esc_sd_mod = None
+        self.esc_sd_thread = None
         # AD
         self.parse = None
         self.ad_thread = None
@@ -117,7 +117,7 @@ class ExtendServicesForm(QWidget, Ui_Form):
         self.service_cbx1.setCurrentIndex(index)
 
         # 初始化
-        self.to_dur_lbl.setText('to')  # SD
+        self.to_dur_lbl.setText('to')  # SpiD
         self.span2.setDecimals(2)
         self.span2.setMinimum(0)
         self.tabWidget.setCurrentIndex(index)
@@ -130,20 +130,20 @@ class ExtendServicesForm(QWidget, Ui_Form):
         self.vd_hide_widgets(True)
         self.gb_2.setTitle('Channel for Statistics Calculating:')
 
-        if index == IndexConfig.SeiD_ESA_ui_idx:
-            self.add_model(ModelConfig.SeiD_ESA_model)
+        if index == IndexConfig.ESC_SD_ui_idx:
+            self.add_model(ModelConfig.ESC_SD_model)
             self.set_process_txt(1, service_name='ESC+SD')
         elif index == IndexConfig.AD_ui_idx:
             self.add_model(ModelConfig.AD_model)
             self.set_process_txt(1, service_name='AD')
             self.ad_unique_widgets(True)
             self.auto_annotate_widgets(True)
-        elif index == IndexConfig.SD_ui_idx:
-            self.add_model(ModelConfig.SD_model)
+        elif index == IndexConfig.SpiD_ui_idx:
+            self.add_model(ModelConfig.SpiD_model)
             self.set_process_txt(1, service_name='SpiD')
             self.auto_annotate_widgets(True)
-        elif index == IndexConfig.HFO_ui_idx:
-            self.add_model(ModelConfig.HFO_model)
+        elif index == IndexConfig.SRD_ui_idx:
+            self.add_model(ModelConfig.SRD_model)
             self.set_process_txt(1, service_name='SRD')
             self.gb_2.setTitle('Channel for Analysing:')
         elif index == IndexConfig.VD_ui_idx:
@@ -170,28 +170,28 @@ class ExtendServicesForm(QWidget, Ui_Form):
             self.model_cbx.setToolTip('')
             return
         self.model_cbx.setToolTip(ModelConfig.get_des(model_name))
-        if model_name in ModelConfig.SeiD_ESA_model:
-            self.seid_esa_mod = model_name
+        if model_name in ModelConfig.ESC_SD_model:
+            self.esc_sd_mod = model_name
             if self.check is False:
-                self.check_input([1000, 4.00, IndexConfig.SeiD_ESA_idx])
+                self.check_input([1000, 4.00, IndexConfig.ESC_SD_idx])
         elif model_name in ModelConfig.AD_model:
             self.parse = model_name.split('_')
             # 需要一个完整的文件路径来正确地定位文件
             self.ad_wev.load(QUrl.fromLocalFile(AddressConfig.get_ad_adr('idx', self.parse[0])))
             if self.check is False:  # 仅切换模型不用二次检查
                 self.check_input([1000, 11.00, IndexConfig.AD_idx])
-        elif model_name in ModelConfig.SD_model:
-            self.sd_wev.load(QUrl.fromLocalFile(AddressConfig.get_sd_adr('idx')))
-            self.show_local_img(self.sd_fam, AddressConfig.get_sd_adr('fam'))
+        elif model_name in ModelConfig.SpiD_model:
+            self.sd_wev.load(QUrl.fromLocalFile(AddressConfig.get_spid_adr('idx')))
+            self.show_local_img(self.sd_fam, AddressConfig.get_spid_adr('fam'))
             self.check_and_disconnect()
             self.listWidget.clear()
             if model_name == 'Template Matching':
-                self.check_input([500, 0.3, IndexConfig.SD_idx])
+                self.check_input([500, 0.3, IndexConfig.SpiD_idx])
             elif model_name == 'Unet+ResNet34':
-                self.check_input([500, 30.00, IndexConfig.SD_idx])
+                self.check_input([500, 30.00, IndexConfig.SpiD_idx])
         elif model_name == 'MKCNN':
             if self.check is False:
-                self.check_input([1000, 1, IndexConfig.HFO_idx])
+                self.check_input([1000, 1, IndexConfig.SRD_idx])
 
     def check_input(self, check_list):
         """
@@ -222,9 +222,9 @@ class ExtendServicesForm(QWidget, Ui_Form):
 
         # Check chns
         chns = []
-        if check_list[2] == IndexConfig.SeiD_ESA_idx:
+        if check_list[2] == IndexConfig.ESC_SD_idx:
             chns = ChannelEnum.CH21.value
-        elif check_list[2] == IndexConfig.AD_idx or check_list[2] == IndexConfig.SD_idx:
+        elif check_list[2] == IndexConfig.AD_idx or check_list[2] == IndexConfig.SpiD_idx:
             chns = ChannelEnum.CH19.value
 
         if chns and Counter(self.raw.ch_names) != Counter(chns):
@@ -241,14 +241,14 @@ class ExtendServicesForm(QWidget, Ui_Form):
         self.span1.valueChanged.connect(lambda: self.span_control(1, check_list[1], t_max))
         self.span2.valueChanged.connect(lambda: self.span_control(2, check_list[1]))
 
-        if check_list[2] != IndexConfig.HFO_idx:
+        if check_list[2] != IndexConfig.SRD_idx:
             self.listWidget.itemClicked.connect(lambda: self.run_calcul_sta(g_or_r='g', group_idx=check_list[2]))
 
-        if check_list[2] == IndexConfig.SeiD_ESA_idx:
-            self.start_btn.clicked.connect(lambda: self.run_seid_esa(self.seid_esa_mod))
+        if check_list[2] == IndexConfig.ESC_SD_idx:
+            self.start_btn.clicked.connect(lambda: self.run_esc_sd(self.esc_sd_mod))
         if check_list[2] == IndexConfig.AD_idx:
             self.start_btn.clicked.connect(lambda: self.run_ad(self.parse))  # 会多次绑定，导致按一下start就会执行绑定次数的槽函数
-        if check_list[2] == IndexConfig.SD_idx:
+        if check_list[2] == IndexConfig.SpiD_idx:
             self.span1.valueChanged.disconnect()
             self.span2.valueChanged.disconnect()
             if check_list[1] == 0.3:
@@ -257,7 +257,7 @@ class ExtendServicesForm(QWidget, Ui_Form):
                 self.span2.setValue(check_list[1])
                 self.span1.valueChanged.connect(lambda: self.min_span_control(0, check_list[1], t_max))
                 self.span2.valueChanged.connect(lambda: self.min_span_control(1, check_list[1], t_max))
-                self.start_btn.clicked.connect(self.run_sd_template)
+                self.start_btn.clicked.connect(self.run_spid_template)
             elif check_list[1] == 30:
                 self.to_dur_lbl.setText('Dur(s): 30s *')
                 self.span2.setDecimals(0)
@@ -265,8 +265,8 @@ class ExtendServicesForm(QWidget, Ui_Form):
                 self.span2.setValue(1)
                 self.span1.valueChanged.connect(lambda: self.multi_span_control(0, check_list[1], t_max))
                 self.span2.valueChanged.connect(lambda: self.multi_span_control(1, check_list[1], t_max))
-                self.start_btn.clicked.connect(self.run_sd_semantics)
-        if check_list[2] == IndexConfig.HFO_idx:
+                self.start_btn.clicked.connect(self.run_spid_semantics)
+        if check_list[2] == IndexConfig.SRD_idx:
             self.span1.valueChanged.disconnect()
             self.span2.valueChanged.disconnect()
             self.span2.setDecimals(2)
@@ -274,7 +274,7 @@ class ExtendServicesForm(QWidget, Ui_Form):
             self.span1.valueChanged.connect(lambda: self.min_span_control(0, check_list[1], t_max))
             self.span2.valueChanged.connect(lambda: self.min_span_control(1, check_list[1], t_max))
             # 在使用 lambda 时包含所有必要的调用括号。如果 self.run_hfo 需要接收特定的参数，lambda 还可以用来提供这些参数
-            self.start_btn.clicked.connect(self.run_hfo)
+            self.start_btn.clicked.connect(self.run_srd)
         self.check = True
         self.parent.diary.info('Pass Checking')
 
@@ -346,18 +346,18 @@ class ExtendServicesForm(QWidget, Ui_Form):
         切换显示统计特征的QLabel
         """
         lbl_dict = {
-            (IndexConfig.SeiD_ESA_idx, 'r'): [[self.r_mean, self.r_std, self.r_var],
-                                              [self.r_d, self.r_t, self.r_a, self.r_b, self.r_g]],
-            (IndexConfig.SeiD_ESA_idx, 'g'): [[self.g_mean, self.g_std, self.g_var],
-                                              [self.g_d, self.g_t, self.g_a, self.g_b, self.g_g]],
+            (IndexConfig.ESC_SD_idx, 'r'): [[self.r_mean, self.r_std, self.r_var],
+                                            [self.r_d, self.r_t, self.r_a, self.r_b, self.r_g]],
+            (IndexConfig.ESC_SD_idx, 'g'): [[self.g_mean, self.g_std, self.g_var],
+                                            [self.g_d, self.g_t, self.g_a, self.g_b, self.g_g]],
             (IndexConfig.AD_idx, 'r'): [[self.r_mean_1, self.r_std_1, self.r_var_1],
                                         [self.r_d_1, self.r_t_1, self.r_a_1, self.r_b_1, self.r_g_1]],
             (IndexConfig.AD_idx, 'g'): [[self.g_mean_1, self.g_std_1, self.g_var_1],
                                         [self.g_d_1, self.g_t_1, self.g_a_1, self.g_b_1, self.g_g_1]],
-            (IndexConfig.SD_idx, 'r'): [[self.r_mean_2, self.r_std_2, self.r_var_2],
-                                        [self.r_d_2, self.r_t_2, self.r_a_2, self.r_b_2, self.r_g_2]],
-            (IndexConfig.SD_idx, 'g'): [[self.g_mean_2, self.g_std_2, self.g_var_2],
-                                        [self.g_d_2, self.g_t_2, self.g_a_2, self.g_b_2, self.g_g_2]],
+            (IndexConfig.SpiD_idx, 'r'): [[self.r_mean_2, self.r_std_2, self.r_var_2],
+                                          [self.r_d_2, self.r_t_2, self.r_a_2, self.r_b_2, self.r_g_2]],
+            (IndexConfig.SpiD_idx, 'g'): [[self.g_mean_2, self.g_std_2, self.g_var_2],
+                                          [self.g_d_2, self.g_t_2, self.g_a_2, self.g_b_2, self.g_g_2]],
             # (IndexConfig.HFO_idx, 'r'): [[self.r_mean_3, self.r_std_3, self.r_var_3],
             #                              [self.r_d_3, self.r_t_3, self.r_a_3, self.r_b_3, self.r_g_3]],
             # (IndexConfig.HFO_idx, 'g'): [[self.g_mean_3, self.g_std_3, self.g_var_3],
@@ -378,32 +378,32 @@ class ExtendServicesForm(QWidget, Ui_Form):
             for label, data in zip(labels, datum):
                 label.setText(f'{data}')
 
-    def run_seid_esa(self, model):
+    def run_esc_sd(self, model):
         """
-        SeiD/ESA 线程启动
+        ESC_SD 线程启动
         """
         if self.model_cbx.currentText() == '':
             return
         self.set_process_txt(7)
         start_time = self.span1.value()
         stop_time = self.span2.value()
-        self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.SeiD_ESA_idx, freq=1000, start=start_time, stop=stop_time)
+        self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.ESC_SD_idx, freq=1000, start=start_time, stop=stop_time)
 
         self.parent.diary.info('使用ESC+SD线程进行检测，接口传入参数：\n'
                                f'start time: {start_time}\n'
                                f'model:{model}')
 
-        self.seid_esa_thread = SeiDESAThread(self.raw.copy(), start_time, model)
+        self.esc_sd_thread = ESCSDThread(self.raw.copy(), start_time, model)
         if model == 'DSMN-ESS':
-            self.seid_esa_thread.fm_signal.connect(self.seid_esa_fm.update_img)
-            self.seid_esa_thread.feature_signal.connect(self.seid_esa_feature.update_img)
-            self.seid_esa_thread.res_signal.connect(self.seid_esa_res.update_img)
+            self.esc_sd_thread.fm_signal.connect(self.esc_sd_fm.update_img)
+            self.esc_sd_thread.feature_signal.connect(self.esc_sd_feature.update_img)
+            self.esc_sd_thread.res_signal.connect(self.esc_sd_res.update_img)
         elif model == 'R3DClassifier':
-            self.seid_esa_thread.fm_signal.connect(self.seid_esa_fm.update_img)
-            self.seid_esa_thread.feature_signal.connect(self.seid_esa_feature.update_img)
-            self.seid_esa_thread.res_signal.connect(self.seid_esa_res.update_img)
-        self.seid_esa_thread.finish_signal.connect(lambda: self.set_process_txt(8, model_name=model))
-        self.seid_esa_thread.start()
+            self.esc_sd_thread.fm_signal.connect(self.esc_sd_fm.update_img)
+            self.esc_sd_thread.feature_signal.connect(self.esc_sd_feature.update_img)
+            self.esc_sd_thread.res_signal.connect(self.esc_sd_res.update_img)
+        self.esc_sd_thread.finish_signal.connect(lambda: self.set_process_txt(8, model_name=model))
+        self.esc_sd_thread.start()
 
     def ad_unique_widgets(self, show=False):
         """
@@ -499,16 +499,16 @@ class ExtendServicesForm(QWidget, Ui_Form):
         )
         self.parent.diary.info(f'tpm:{fb_idx}')
 
-    def run_sd_template(self):
+    def run_spid_template(self):
         """
-        SD 模板匹配线程启动
+        SpiD 模板匹配线程启动
         """
         if self.model_cbx.currentText() == '':
             return
         self.set_process_txt(7)
         start_time = self.span1.value()
         stop_time = self.span2.value()
-        self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.SD_idx, freq=500, start=start_time, stop=stop_time)
+        self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.SpiD_idx, freq=500, start=start_time, stop=stop_time)
 
         auto = self.ann_cbx.isChecked()
         self.parent.diary.info('使用模板匹配线程进行检测，接口传入参数：\n'
@@ -516,23 +516,23 @@ class ExtendServicesForm(QWidget, Ui_Form):
                                f'stop_time: {stop_time}\n'
                                f'annotate: {auto}')
 
-        self.sd_tem_thread = SDTemplateThread(self.raw.copy(), start_time, stop_time, auto)
+        self.sd_tem_thread = SpiDTemplateThread(self.raw.copy(), start_time, stop_time, auto)
         self.sd_tem_thread.res_signal.connect(lambda x, y: self.sd_res.update_img(img_data=x, raw=y))
         self.sd_tem_thread.ann_signal.connect(self.annotate_result_overlap)
         self.sd_tem_thread.swi_signal.connect(lambda x: self.sd_swi.setText('SWI(Spike wave index):' + x))
         self.sd_tem_thread.finish_signal.connect(lambda: self.set_process_txt(8, model_name='Template Matching'))
         self.sd_tem_thread.start()
 
-    def run_sd_semantics(self):
+    def run_spid_semantics(self):
         """
-        SD 语义分割线程启动
+        SpiD 语义分割线程启动
         """
         if self.model_cbx.currentText() == '':
             return
         self.set_process_txt(7)
         start_time = self.span1.value()
         stop_time = start_time + self.span2.value() * 30
-        self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.SD_idx, freq=500, start=start_time, stop=stop_time)
+        self.run_calcul_sta(g_or_r='r', group_idx=IndexConfig.SpiD_idx, freq=500, start=start_time, stop=stop_time)
 
         auto = self.ann_cbx.isChecked()
         self.parent.diary.info('使用语义分割线程进行检测，接口传入参数：\n'
@@ -540,7 +540,7 @@ class ExtendServicesForm(QWidget, Ui_Form):
                                f'stop_time: {stop_time}\n'
                                f'annotate: {auto}')
 
-        self.sd_sem_thread = SDSemanticsThread(self.raw.copy(), start_time, stop_time, auto)
+        self.sd_sem_thread = SpiDSemanticsThread(self.raw.copy(), start_time, stop_time, auto)
         self.sd_sem_thread.res_signal.connect(lambda x, y: self.sd_res.update_img(img_data=x, raw=y))
         self.sd_sem_thread.ann_signal.connect(self.annotate_result_overlap)
         self.sd_sem_thread.swi_signal.connect(lambda x: self.sd_swi.setText('SWI(Spike wave index):' + x))
@@ -552,7 +552,7 @@ class ExtendServicesForm(QWidget, Ui_Form):
         添加检测结果：（防止重复添加相同事件，且若事件前后有重叠，合并两个重叠事件为一个，直到与后续事件没有重叠为止）
         ann_list: [[onset, duration, description], [...]]
         test: AD: 1000data_ad.edf 0-11s 1-12s 2-13s
-              SD: test_19_sd.edf 0-10s 1-11s 2-12s 29-39s 30-40s
+              SpiD: test_19_sd.edf 0-10s 1-11s 2-12s 29-39s 30-40s
         """
         if len(ann_list) > 0:
             # ann = self.parent.raw.annotations 使用 ann.crop() 依然会影响到 self.parent.raw.annotations 需要使用copy
@@ -638,9 +638,9 @@ class ExtendServicesForm(QWidget, Ui_Form):
             self.raw = self.parent.raw.copy()
         self.set_process_txt(10)
 
-    def run_hfo(self):
+    def run_srd(self):
         """
-        HFO 线程启动
+        SRD 线程启动
         """
         if self.model_cbx.currentText() == '':
             return
@@ -659,7 +659,7 @@ class ExtendServicesForm(QWidget, Ui_Form):
                                f'start time: {start_time}\n'
                                f'stop_time: {stop_time}\n')
 
-        self.hfo_thread = HFOThread(self.raw.copy(), ch_idx, start_time, stop_time)
+        self.hfo_thread = SRDThread(self.raw.copy(), ch_idx, start_time, stop_time)
         self.hfo_thread.res_signal.connect(lambda x: self.plot_hfo(x, start_time))
         # self.hfo_thread.res_signal.connect(lambda x: x.plot())  # 此处已经把HFO事件加入到单通道的raw中了（绘制出来就有显示）
         self.hfo_thread.finish_signal.connect(lambda: self.set_process_txt(8, model_name='SRD'))

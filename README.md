@@ -4,6 +4,7 @@ Copyright (c) 2025 XIA ZE
 
 This software is part of an official research project conducted in a laboratory setting.  
 🔗 Research Project Link: [https://ai.hdu.edu.cn/2021/0611/c6448a135392/page.htm](https://ai.hdu.edu.cn/2021/0611/c6448a135392/page.htm)  
+🔗 Paper Link: [EAViz: a user-friendly deep learning-based epilepsy analysis visualizer using multimodal data](https://link.springer.com/article/10.1007/s11227-025-07494-2)  
 ⚠️ Pretrained models for various networks are **NOT** included in this repository.  
 
 ## License Terms:

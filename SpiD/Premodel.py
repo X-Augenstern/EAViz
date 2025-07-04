@@ -1,8 +1,8 @@
 from os import listdir, path
 from torch import load, from_numpy, no_grad, argmax
-from SD.Unet34 import Unet34
+from SpiD.Unet34 import Unet34
 from numpy import zeros, where, array, load as np_load
-import SD.Config as cfg
+import SpiD.Config as cfg
 
 
 def prepareModel(cfg):

@@ -19,17 +19,17 @@ class SelectSignalsForm(QWidget, ui_select_signals_form):
 
     def init_ui(self):
         self.ok_btn.clicked.connect(self.load_raw)
-        self.esa_btn.clicked.connect(lambda: self.select_chns('SeiD/ESA'))
-        self.sd_btn.clicked.connect(lambda: self.select_chns('AD/SD'))
+        self.esa_btn.clicked.connect(lambda: self.select_chns('ESC_SD'))
+        self.sd_btn.clicked.connect(lambda: self.select_chns('AD/SpiD'))
         self.listWidget.addItems(ChannelEnum.CH21.value)
         # self.yaml_btn.clicked.connect(self.open_yaml)
 
     def select_chns(self, service):
         chns = None
         self.listWidget.clearSelection()
-        if service == 'SeiD/ESA':
+        if service == 'ESC_SD':
             chns = ChannelEnum.CH21.value
-        elif service == 'AD/SD':
+        elif service == 'AD/SpiD':
             chns = ChannelEnum.CH19.value
         for ch in chns:
             for i in range(self.listWidget.count()):

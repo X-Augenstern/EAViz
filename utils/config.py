@@ -7,46 +7,46 @@ class IndexConfig:
     """
     各功能在ui界面、功能上的索引
     """
-    SeiD_ESA_ui_idx = 1
+    ESC_SD_ui_idx = 1
     AD_ui_idx = 2
-    SD_ui_idx = 3
-    HFO_ui_idx = 4
+    SpiD_ui_idx = 3
+    SRD_ui_idx = 4
     VD_ui_idx = 5
 
-    SeiD_ESA_idx = SeiD_ESA_ui_idx - 1
+    ESC_SD_idx = ESC_SD_ui_idx - 1
     AD_idx = AD_ui_idx - 1
-    SD_idx = SD_ui_idx - 1
-    HFO_idx = HFO_ui_idx - 1
+    SpiD_idx = SpiD_ui_idx - 1
+    SRD_idx = SRD_ui_idx - 1
     VD_idx = VD_ui_idx - 1
 
 
 class ModelConfig:
-    SeiD_ESA_model = ['', 'DSMN-ESS', 'R3DClassifier']
+    ESC_SD_model = ['', 'DSMN-ESS', 'R3DClassifier']
     AD_model = ['', 'Resnet34_AE_BCELoss', 'Resnet34_SkipAE_BCELoss', 'Resnet34_MemAE_BCELoss',
                 'Resnet34_VAE_BCELoss', 'SENet18_AE_BCELoss', 'SENet18_SkipAE_BCELoss',
                 'SENet18_MemAE_BCELoss', 'SENet18_VAE_BCELoss', 'VGG16_AE_BCELoss', 'VGG16_SkipAE_BCELoss',
                 'VGG16_MemAE_BCELoss', 'VGG16_VAE_BCELoss', 'DenseNet121_AE_BCELoss',
                 'DenseNet121_SkipAE_BCELoss', 'DenseNet121_MemAE_BCELoss', 'DenseNet121_VAE_BCELoss']
-    SD_model = ['', 'Template Matching', 'Unet+ResNet34']
-    HFO_model = ['', 'MKCNN']
+    SpiD_model = ['', 'Template Matching', 'Unet+ResNet34']
+    SRD_model = ['', 'MKCNN']
     VD_model = ['', 'yolov5l_3dResnet']
 
-    SeiD_ESA_model_des = 'This model requires the <INPUT> .EDF FILE:\n' \
-                         'sfreq: 1000Hz\n' \
-                         '21 channels, which can be selected in Select Signals Form per button ESA/SeiD (21 channels)\n' \
-                         'preprocessing: None\n' \
-                         'time span: 4s'
+    ESC_SD_model_des = 'This model requires the <INPUT> .EDF FILE:\n' \
+                       'sfreq: 1000Hz\n' \
+                       '21 channels, which can be selected in Select Signals Form per button ESC + SD (21 channels)\n' \
+                       'preprocessing: None\n' \
+                       'time span: 4s'
     AD_model_des = 'This model requires the <INPUT> .EDF FILE:\n' \
                    'sfreq: 1000Hz\n' \
-                   '19 channels, which can be selected in Select Signals Form per button AD/SD (19 channels)\n' \
+                   '19 channels, which can be selected in Select Signals Form per button AD, SpiD (19 channels)\n' \
                    'preprocessing: None\n' \
                    'time span: 11s'
-    SD_model_des = 'This model requires the <INPUT> .EDF FILE:\n' \
-                   'sfreq: 500Hz\n' \
-                   '19 channels, which can be selected in Select Signals Form per button AD/SD (19 channels)\n' \
-                   'preprocessing: None\n' \
-                   'time span: >=0.3s(Template) | multiple of 30s(Semantics)'
-    HFO_model_des = 'This model requires the <INPUT> .EDF FILE:\n' \
+    SpiD_model_des = 'This model requires the <INPUT> .EDF FILE:\n' \
+                     'sfreq: 500Hz\n' \
+                     '19 channels, which can be selected in Select Signals Form per button AD, SpiD (19 channels)\n' \
+                     'preprocessing: None\n' \
+                     'time span: >=0.3s(Template) | multiple of 30s(Semantics)'
+    SRD_model_des = 'This model requires the <INPUT> .EDF FILE:\n' \
                     'sfreq: 1000Hz\n' \
                     'preprocessing: None\n' \
                     'time span: >=1s'
@@ -55,14 +55,14 @@ class ModelConfig:
 
     @staticmethod
     def get_des(model):
-        if model in ModelConfig.SeiD_ESA_model:
-            return ModelConfig.SeiD_ESA_model_des
+        if model in ModelConfig.ESC_SD_model:
+            return ModelConfig.ESC_SD_model_des
         elif model in ModelConfig.AD_model:
             return ModelConfig.AD_model_des
-        elif model in ModelConfig.SD_model:
-            return ModelConfig.SD_model_des
-        elif model in ModelConfig.HFO_model:
-            return ModelConfig.HFO_model_des
+        elif model in ModelConfig.SpiD_model:
+            return ModelConfig.SpiD_model_des
+        elif model in ModelConfig.SRD_model:
+            return ModelConfig.SRD_model_des
         elif model == 'VD':
             return ModelConfig.VD_model_des
 
@@ -187,13 +187,24 @@ class AddressConfig:
     log_folder_path = './utils/diary'
 
     @staticmethod
-    def get_esa_adr(name):
+    def get_esc_adr(name):
         hashtable = {
-            'fm': "./ESA/offline_analyse/feature_map/fm.png",
-            'feature': "./ESA/offline_analyse/feature/feature.png",
-            'STFT': "./ESA/offline_analyse/STFT/",
-            'res': "./ESA/offline_analyse/result/res.png",
-            'cp': "./ESA/A3D-EEG_epoch-19.pth.tar"
+            'fm': "./ESC_SD/ESC/offline_analyse/feature_map/fm.png",
+            'feature': "./ESC_SD/ESC/offline_analyse/feature/feature.png",
+            'STFT': "./ESC_SD/ESC/offline_analyse/STFT/",
+            'res': "./ESC_SD/ESC/offline_analyse/result/res.png",
+            'cp': "./ESC_SD/ESC/A3D-EEG_epoch-19.pth.tar"
+        }
+        return path.abspath(hashtable.get(name, ''))
+
+    @staticmethod
+    def get_sd_adr(name):
+        hashtable = {
+            'fm': "./ESC_SD/SD/offline_analyse/feature_map/fm.png",
+            'feature': "./SD/offline_analyse/feature/feature.png",
+            'STFT': "./ESC_SD/SD/offline_analyse/STFT/",
+            'res': "./ESC_SD/SD/offline_analyse/result/res.png",
+            'cp': "./ESC_SD/SD/0.15-EEG_epoch-19.pth.tar"
         }
         return path.abspath(hashtable.get(name, ''))
 
@@ -207,31 +218,20 @@ class AddressConfig:
         return path.abspath(hashtable.get(name, ''))
 
     @staticmethod
-    def get_sd_adr(name):
+    def get_spid_adr(name):
         hashtable = {
-            'idx': f"./SD/offline_analyse/index/idx_{ThemeColorConfig.theme}.html",
-            'fam': f"./SD/offline_analyse/family/fam_{ThemeColorConfig.theme}.png",
-            'res': "./SD/offline_analyse/result/res.png",
-            'mat': "./SD/mat",
-            'npz': "./SD/npz",
+            'idx': f"./SpiD/offline_analyse/index/idx_{ThemeColorConfig.theme}.html",
+            'fam': f"./SpiD/offline_analyse/family/fam_{ThemeColorConfig.theme}.png",
+            'res': "./SpiD/offline_analyse/result/res.png",
+            'mat': "./SpiD/mat",
+            'npz': "./SpiD/npz",
         }
         return path.abspath(hashtable.get(name, ''))
 
     @staticmethod
-    def get_seid_adr(name):
+    def get_srd_adr(name):
         hashtable = {
-            'fm': "./SeiD/offline_analyse/feature_map/fm.png",
-            'feature': "./SeiD/offline_analyse/feature/feature.png",
-            'STFT': "./SeiD/offline_analyse/STFT/",
-            'res': "./SeiD/offline_analyse/result/res.png",
-            'cp': "./SeiD/0.15-EEG_epoch-19.pth.tar"
-        }
-        return path.abspath(hashtable.get(name, ''))
-
-    @staticmethod
-    def get_hfo_adr(name):
-        hashtable = {
-            'cp': "./HFO/model_weights.pth"
+            'cp': "./SRD/model_weights.pth"
         }
         return path.abspath(hashtable.get(name, ''))
 

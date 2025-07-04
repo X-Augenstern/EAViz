@@ -1,7 +1,7 @@
 from torch.nn import init
 from torch import nn
-from SD.Config import loss_weight
-from SD.resnet import resnet34
+from SpiD.Config import loss_weight
+from SpiD.resnet import resnet34
 
 
 def weights_init_kaiming(m):
