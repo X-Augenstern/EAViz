@@ -450,7 +450,7 @@ class ExtendServicesForm(QWidget, Ui_Form):
                                f'annotate: {auto}')
 
         self.ad_thread = ADThread(self.raw.copy(), int(start_time), int(stop_time), model[0], model[1], arti_list,
-                                  fb_idx, auto)
+                                  fb_idx, auto)  # todo 精度
         # self.ad_thread.topo_signal.connect(lambda: self.show_local_img(self.ad_topo, AddressConfig.get_ad_adr('topo')))
         # self.ad_thread.res_signal.connect(lambda: self.show_local_img(self.ad_res, AddressConfig.get_ad_adr('res')))
         self.ad_thread.topo_signal.connect(self.ad_topo.update_img)

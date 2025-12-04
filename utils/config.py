@@ -53,18 +53,18 @@ class ModelConfig:
     VD_model_des = 'This model requires the <INPUT> .MP4 FILE:\n' \
                    'frame per second: 20'
 
-    @staticmethod
-    def get_des(model):
-        if model in ModelConfig.ESC_SD_model:
-            return ModelConfig.ESC_SD_model_des
-        elif model in ModelConfig.AD_model:
-            return ModelConfig.AD_model_des
-        elif model in ModelConfig.SpiD_model:
-            return ModelConfig.SpiD_model_des
-        elif model in ModelConfig.SRD_model:
-            return ModelConfig.SRD_model_des
+    @classmethod
+    def get_des(cls, model):
+        if model in cls.ESC_SD_model:
+            return cls.ESC_SD_model_des
+        elif model in cls.AD_model:
+            return cls.AD_model_des
+        elif model in cls.SpiD_model:
+            return cls.SpiD_model_des
+        elif model in cls.SRD_model:
+            return cls.SRD_model_des
         elif model == 'VD':
-            return ModelConfig.VD_model_des
+            return cls.VD_model_des
 
 
 class ChannelEnum(Enum):

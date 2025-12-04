@@ -20,6 +20,7 @@ def plot_esc_res(data, res_signal):
     tight_layout()
     buffer = BytesIO()
     savefig(buffer, format='png', dpi=300)
+    # 把画好的图保存到 buffer 里，此时“文件指针”在 buffer 的末尾，如果想从头读取这个 buffer 里的内容，必须先把指针移动到开头，否则某些读取操作可能会从文件尾部开始，读不到任何东西
     buffer.seek(0)
     res_signal.emit(buffer.getvalue())
     close()

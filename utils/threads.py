@@ -578,7 +578,7 @@ class VDThread(QThread):
             # 将处理后的图像中特定区域的特征保存起来
             self.features.append(resize(im[int(xyxy[1]):int(xyxy[3]), int(xyxy[0]):int(xyxy[2])], (112, 112)))
 
-        if self.cnt % 60 == 0 and self.cnt > 0:  # 每三秒输出一个动作标签
+        if self.cnt % 60 == 0 and self.cnt > 0 and self.features:  # 每三秒输出一个动作标签
             res = actionRecognition(self.actionModel, self.features, self.device)
             cur_second = self.cnt / 20
             self.res_signal.emit(f'{cur_second - 3}-{cur_second}s: {res} —> {path.basename(video_path)}')
@@ -588,7 +588,7 @@ class VDThread(QThread):
         pred, featuremap = self.detectModel(img, augment=False, visualize=False)
         pred = non_max_suppression([pred[0], pred[2]], self.conf_thres, self.iou_thres, None, False, max_det=5)
 
-        if pred is not None:
+        if pred is not None and len(pred) > 0:
             pred = sorted(pred, key=lambda x: x[0][4], reverse=True)[0]
             last_box = pred.clone()
         elif last_box is not None:
@@ -706,7 +706,7 @@ class VDWriteThread(QThread):
 
     def run(self):
         self.running = True
-        fourcc = VideoWriter.fourcc(*"mp4v")
+        fourcc = VideoWriter.fourcc(*"avc1")
         output_video = VideoWriter(self.output_adr, fourcc, 20, self.output_size)
         for frame in self.output_frames:
             if not self.running:

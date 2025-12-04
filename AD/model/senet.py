@@ -2,9 +2,9 @@
 
 SENet is the winner of ImageNet-2017. The paper is not released yet.
 '''
-from torch import randn
+from torch import randn, sigmoid
 from torch.nn import Module, BatchNorm1d, Conv1d, MaxPool1d, AdaptiveAvgPool1d, Linear, ReLU, Sequential
-from torch.nn.functional import relu, sigmoid, avg_pool2d
+from torch.nn.functional import relu, avg_pool2d
 
 Conv = Conv1d
 BN = BatchNorm1d
@@ -130,7 +130,6 @@ def test():
     net = SENet18()
     y = net(randn(1, 3, 32, 32))
     print(y.size())
-
 
 # if __name__ == "__main__":
 #     from torchsummary import summary
