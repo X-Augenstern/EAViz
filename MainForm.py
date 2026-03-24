@@ -1,36 +1,43 @@
-from sys import argv, exit
-from PyQt5.QtGui import QPalette, QPixmap, QBrush, QIcon, QColor
-from PyQt5.QtWidgets import QApplication, QFileDialog, QFrame, QMessageBox, QSizePolicy
-from PyQt5.QtCore import Qt
+from utils.config import AppConfig
+
+if AppConfig.USE_ENGINE:
+    from ExtendServicesFormEngine import ExtendServicesForm
+
+    print(f"[App] use engine...")
+else:
+    from ExtendServicesForm import ExtendServicesForm
+
 from matplotlib import use, style
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.patheffects import Stroke, Normal
 from matplotlib.pyplot import rcParams, subplots, tight_layout
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from numpy import atleast_1d
-from SelectSignalsForm import SelectSignalsForm
-from FilterOptionsForm import FilterOptionsForm
-from SelectSignalsForPSD import SelectSignalsForPSD
-from SelectTimeSpanForTPM import SelectTimeSpanForTPM
-from ExtendServicesForm import ExtendServicesForm
-from ExportForm import ExportForm
-from utils.filter_info import FilterInfo
-from utils.config import AddressConfig, PSDEnum, ChannelEnum, ThemeColorConfig
-from utils.edf import EdfUtil
-from utils.eeg_browser_extend import EEGBrowserManager
-from utils.custom_widgets import QWidgetDock, SaveDock
-from utils.diary import Diary
-from pyqtgraph.dockarea import DockArea
 from mne import set_config
-from warnings import filterwarnings
+from numpy import atleast_1d
+from os import path
+from pyqtgraph.dockarea import DockArea
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPalette, QPixmap, QBrush, QIcon, QColor
+from PyQt5.QtWidgets import QApplication, QFileDialog, QFrame, QMessageBox, QSizePolicy
 from qdarkstyle import load_stylesheet_pyqt5, load_stylesheet, LightPalette
 from qfluentwidgets import toggleTheme
 from qfluentwidgets.components.dialog_box.color_dialog import ColorDialog
-# from ui.main_form_cur_medicine import Ui_Form
-from ui.main_form_cur import Ui_Form
-from os import path
 import sys
+from warnings import filterwarnings
 
+from ExportForm import ExportForm
+from FilterOptionsForm import FilterOptionsForm
+from SelectSignalsForm import SelectSignalsForm
+from SelectSignalsForPSD import SelectSignalsForPSD
+from SelectTimeSpanForTPM import SelectTimeSpanForTPM
+from ui.main_form_cur import Ui_Form
+# from ui.main_form_cur_medicine import Ui_Form
 # from MedicationEvaluationFrom import MedicationEvaluationFrom
+from utils.config import AddressConfig, PSDEnum, ChannelEnum, ThemeColorConfig
+from utils.custom_widgets import QWidgetDock, SaveDock
+from utils.diary import Diary
+from utils.edf import EdfUtil
+from utils.eeg_browser_extend import EEGBrowserManager
+from utils.filter_info import FilterInfo
 
 use('Qt5Agg')
 set_config('MNE_BROWSER_BACKEND', 'matplotlib')
@@ -700,11 +707,10 @@ def set_global_mode(app):
 
 
 if __name__ == "__main__":
-    QApplication.setHighDpiScaleFactorRoundingPolicy(
-        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
-    app = QApplication(argv)
+    app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(AddressConfig.get_icon_adr("icon", 'icon')))  # icon
 
     ThemeColorConfig.theme = "light"
@@ -712,4 +718,4 @@ if __name__ == "__main__":
 
     main_form = MainForm()
     main_form.show()
-    exit(app.exec_())
+    sys.exit(app.exec_())

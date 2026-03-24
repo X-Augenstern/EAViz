@@ -1,6 +1,10 @@
 from enum import Enum
-from os import path
 from matplotlib.colors import TABLEAU_COLORS
+from os import path
+
+
+class AppConfig:
+    USE_ENGINE = True
 
 
 class IndexConfig:
