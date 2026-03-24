@@ -2,7 +2,6 @@ from utils.config import AppConfig
 
 if AppConfig.USE_ENGINE:
     from ExtendServicesFormEngine import ExtendServicesForm
-
     print(f"[App] use engine...")
 else:
     from ExtendServicesForm import ExtendServicesForm
